@@ -85,6 +85,13 @@ public class SummonStorm {
         if(event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(ModBlocks.RITUAL_STONE);
             event.accept(ModBlocks.RITUAL_STONE_ORE);
+
+            event.accept(ModBlocks.INFUSED_STONE);
+            event.accept(ModBlocks.FIRE_INFUSED_STONE);
+            event.accept(ModBlocks.WATER_INFUSED_STONE);
+            event.accept(ModBlocks.EARTH_INFUSED_STONE);
+            event.accept(ModBlocks.AIR_INFUSED_STONE);
+            event.accept(ModBlocks.VERDANT_INFUSED_STONE);
         }
     }
 

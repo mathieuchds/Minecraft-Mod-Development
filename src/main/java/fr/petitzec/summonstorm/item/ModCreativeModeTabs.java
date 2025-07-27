@@ -18,6 +18,8 @@ public class ModCreativeModeTabs {
             () -> CreativeModeTab.builder().icon(()-> new ItemStack(ModItems.SUMMONING_SHARD.get()))
                     .title(Component.translatable("creativetab.summonstorm.summoning_items"))
                     .displayItems((itemDisplayParameters, output)-> {
+
+                        // Items
                         output.accept(ModItems.SUMMONING_SHARD.get());
                         output.accept(ModItems.SUMMONING_GEM.get());
                         output.accept(ModItems.FIRE_SUMMONING_SHARD.get());
@@ -31,8 +33,17 @@ public class ModCreativeModeTabs {
                         output.accept(ModItems.AIR_SUMMONING_SHARD.get());
                         output.accept(ModItems.AIR_SUMMONING_GEM.get());
 
+
+                        // Blocs
                         output.accept(ModBlocks.RITUAL_STONE.get());
                         output.accept(ModBlocks.RITUAL_STONE_ORE.get());
+
+                        output.accept(ModBlocks.INFUSED_STONE.get());
+                        output.accept(ModBlocks.FIRE_INFUSED_STONE.get());
+                        output.accept(ModBlocks.WATER_INFUSED_STONE.get());
+                        output.accept(ModBlocks.AIR_INFUSED_STONE.get());
+                        output.accept(ModBlocks.EARTH_INFUSED_STONE.get());
+                        output.accept(ModBlocks.VERDANT_INFUSED_STONE.get());
                     })
                     .build());
 

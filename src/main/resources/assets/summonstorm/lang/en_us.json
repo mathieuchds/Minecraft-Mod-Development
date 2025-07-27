@@ -15,5 +15,13 @@
   "block.summonstorm.ritual_stone": "Ritual Stone Block",
   "block.summonstorm.ritual_stone_ore": "Ritual Stone Ore",
 
-  "creativetab.summonstorm.summoning_items" : "Summon Storm Items"
+  "block.summonstorm.infused_stone": "Infused Stone",
+  "block.summonstorm.fire_infused_stone": "Fire Infused Stone",
+  "block.summonstorm.water_infused_stone": "Water Infused Stone",
+  "block.summonstorm.earth_infused_stone": "Earth Infused Stone",
+  "block.summonstorm.air_infused_stone": "Air Infused Stone",
+  "block.summonstorm.verdant_infused_stone": "Verdant Infused Stone",
+
+
+  "creativetab.summonstorm.summoning_items" : "Summon Storm Mod Items"
 }

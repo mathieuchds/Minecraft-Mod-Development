@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "summonstorm:water_summoning_gem"
+    }
+  ],
+  "result" : {
+    "count": 9,
+    "id": "summonstorm:water_summoning_shard"
+  }
+}

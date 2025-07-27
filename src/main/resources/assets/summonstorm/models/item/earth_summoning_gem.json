@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "summonstorm:item/earth_summoning_gem"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "summonstorm:block/earth_infused_stone"
+  }
+}

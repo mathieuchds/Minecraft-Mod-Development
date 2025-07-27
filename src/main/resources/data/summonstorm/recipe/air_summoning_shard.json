@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "summonstorm:air_summoning_gem"
+    }
+  ],
+  "result" : {
+    "count": 9,
+    "id": "summonstorm:air_summoning_shard"
+  }
+}
