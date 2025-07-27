@@ -22,6 +22,10 @@ public class ModBlocks {
             ()-> new Block(BlockBehaviour.Properties.of()
                     .strength(4f).requiresCorrectToolForDrops().sound(SoundType.STONE)));
 
+    public static final RegistryObject<Block> RITUAL_STONE_ORE = registerBlock("ritual_stone_ore",
+            ()-> new Block(BlockBehaviour.Properties.of()
+                    .strength(6f).requiresCorrectToolForDrops().sound(SoundType.AMETHYST)));
+
     private static  <T extends  Block> RegistryObject<T> registerBlock(String name, Supplier<T> block){
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
         registerBlockItem(name, toReturn);
@@ -29,7 +33,7 @@ public class ModBlocks {
     }
 
     private static <T extends  Block> void registerBlockItem(String name, RegistryObject<T> block){
-        ModItems.ITEMS.register(name, ()-> new BlockItem(block.get(), new Item.Properties()));
+        ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
     }
 
     public static void register(IEventBus eventBus) {

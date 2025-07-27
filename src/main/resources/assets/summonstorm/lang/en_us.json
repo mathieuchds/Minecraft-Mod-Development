@@ -1,4 +1,19 @@
 {
-  "item.summonstorm.summoningshard": "Summoning Shard",
-  "item.summonstorm.summoningstone": "Summoning Stone"
+  "item.summonstorm.summoning_shard": "Summoning Shard",
+  "item.summonstorm.summoning_gem": "Summoning Gem",
+  "item.summonstorm.fire_summoning_shard": "Fire Summoning Shard",
+  "item.summonstorm.fire_summoning_gem": "Fire Summoning Gem",
+  "item.summonstorm.water_summoning_shard": "Water Summoning Shard",
+  "item.summonstorm.water_summoning_gem": "Water Summoning Gem",
+  "item.summonstorm.earth_summoning_shard": "Earth Summoning Shard",
+  "item.summonstorm.earth_summoning_gem": "Earth Summoning Gem",
+  "item.summonstorm.verdant_summoning_shard": "Verdant Summoning Shard",
+  "item.summonstorm.verdant_summoning_gem": "Verdant Summoning Gem",
+  "item.summonstorm.air_summoning_shard": "Air Summoning Shard",
+  "item.summonstorm.air_summoning_gem": "Air Summoning Gem",
+
+  "block.summonstorm.ritual_stone": "Ritual Stone Block",
+  "block.summonstorm.ritual_stone_ore": "Ritual Stone Ore",
+
+  "creativetab.summonstorm.summoning_items" : "Summon Storm Items"
 }

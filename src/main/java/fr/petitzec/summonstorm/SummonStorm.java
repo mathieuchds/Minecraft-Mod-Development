@@ -2,6 +2,7 @@ package fr.petitzec.summonstorm;
 
 import com.mojang.logging.LogUtils;
 import fr.petitzec.summonstorm.block.ModBlocks;
+import fr.petitzec.summonstorm.item.ModCreativeModeTabs;
 import fr.petitzec.summonstorm.item.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
@@ -48,6 +49,8 @@ public class SummonStorm {
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
+        ModCreativeModeTabs.register(modEventBus);
+
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
 
@@ -66,11 +69,22 @@ public class SummonStorm {
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if(event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItems.SUMMONING_SHARD);
-            event.accept(ModItems.SUMMONINGS_STONE);
+            event.accept(ModItems.SUMMONING_GEM);
+            event.accept(ModItems.FIRE_SUMMONING_SHARD);
+            event.accept(ModItems.FIRE_SUMMONING_GEM);
+            event.accept(ModItems.WATER_SUMMONING_SHARD);
+            event.accept(ModItems.WATER_SUMMONING_GEM);
+            event.accept(ModItems.EARTH_SUMMONING_SHARD);
+            event.accept(ModItems.EARTH_SUMMONING_GEM);
+            event.accept(ModItems.VERDANT_SUMMONING_SHARD);
+            event.accept(ModItems.VERDANT_SUMMONING_GEM);
+            event.accept(ModItems.AIR_SUMMONING_SHARD);
+            event.accept(ModItems.AIR_SUMMONING_GEM);
         }
 
         if(event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(ModBlocks.RITUAL_STONE);
+            event.accept(ModBlocks.RITUAL_STONE_ORE);
         }
     }
 
