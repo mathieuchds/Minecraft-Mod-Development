@@ -2,9 +2,11 @@ package fr.petitzec.summonstorm.block;
 
 import fr.petitzec.summonstorm.SummonStorm;
 import fr.petitzec.summonstorm.item.ModItems;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -22,14 +24,10 @@ public class ModBlocks {
             ()-> new Block(BlockBehaviour.Properties.of()
                     .strength(4f).requiresCorrectToolForDrops().sound(SoundType.STONE)));
 
-    public static final RegistryObject<Block> RITUAL_STONE_ORE = registerBlock("ritual_stone_ore",
-            ()-> new Block(BlockBehaviour.Properties.of()
-                    .strength(6f).requiresCorrectToolForDrops().sound(SoundType.AMETHYST)));
-
 
 
     public static final RegistryObject<Block> INFUSED_STONE = registerBlock("infused_stone",
-            ()-> new Block(BlockBehaviour.Properties.of()
+            ()-> new DropExperienceBlock(UniformInt.of(2, 4), BlockBehaviour.Properties.of()
                     .strength(4f).requiresCorrectToolForDrops().sound(SoundType.STONE)));
 
     public static final RegistryObject<Block> FIRE_INFUSED_STONE = registerBlock("fire_infused_stone",

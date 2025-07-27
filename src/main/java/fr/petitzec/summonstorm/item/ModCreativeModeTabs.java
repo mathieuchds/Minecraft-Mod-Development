@@ -36,7 +36,6 @@ public class ModCreativeModeTabs {
 
                         // Blocs
                         output.accept(ModBlocks.RITUAL_STONE.get());
-                        output.accept(ModBlocks.RITUAL_STONE_ORE.get());
 
                         output.accept(ModBlocks.INFUSED_STONE.get());
                         output.accept(ModBlocks.FIRE_INFUSED_STONE.get());
