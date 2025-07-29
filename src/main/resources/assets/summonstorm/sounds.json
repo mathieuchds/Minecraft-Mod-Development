@@ -1,0 +1,11 @@
+{
+  "thunder_call": {
+    "category": "weather",
+    "sounds": [
+      {
+        "name": "summonstorm:thunder_call",
+        "stream": false
+      }
+    ]
+  }
+}
