@@ -1,0 +1,6 @@
+{
+  "parent": "summonstorm:item/weather_staff",
+  "textures": {
+    "layer0": "summonstorm:item/weather_staff_pulling_0"
+  }
+}
