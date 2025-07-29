@@ -27,27 +27,27 @@ public class ModBlocks {
 
 
     public static final RegistryObject<Block> INFUSED_STONE = registerBlock("infused_stone",
-            ()-> new DropExperienceBlock(UniformInt.of(2, 4), BlockBehaviour.Properties.of()
+            ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
                     .strength(4f).requiresCorrectToolForDrops().sound(SoundType.STONE)));
 
     public static final RegistryObject<Block> FIRE_INFUSED_STONE = registerBlock("fire_infused_stone",
-            ()-> new Block(BlockBehaviour.Properties.of()
+            ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
                     .strength(4f).requiresCorrectToolForDrops().sound(SoundType.STONE)));
 
     public static final RegistryObject<Block> WATER_INFUSED_STONE = registerBlock("water_infused_stone",
-            ()-> new Block(BlockBehaviour.Properties.of()
+            ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
                     .strength(4f).requiresCorrectToolForDrops().sound(SoundType.STONE)));
 
     public static final RegistryObject<Block> EARTH_INFUSED_STONE = registerBlock("earth_infused_stone",
-            ()-> new Block(BlockBehaviour.Properties.of()
+            ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
                     .strength(4f).requiresCorrectToolForDrops().sound(SoundType.STONE)));
 
     public static final RegistryObject<Block> AIR_INFUSED_STONE = registerBlock("air_infused_stone",
-            ()-> new Block(BlockBehaviour.Properties.of()
+            ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
                     .strength(4f).requiresCorrectToolForDrops().sound(SoundType.STONE)));
 
     public static final RegistryObject<Block> VERDANT_INFUSED_STONE = registerBlock("verdant_infused_stone",
-            ()-> new Block(BlockBehaviour.Properties.of()
+            ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
                     .strength(4f).requiresCorrectToolForDrops().sound(SoundType.STONE)));
 
 

@@ -80,9 +80,17 @@ public class SummonStorm {
             event.accept(ModItems.VERDANT_SUMMONING_GEM);
             event.accept(ModItems.AIR_SUMMONING_SHARD);
             event.accept(ModItems.AIR_SUMMONING_GEM);
+
+
+
         }
 
-        if(event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
+        if(event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.accept(ModItems.WEATHER_STAFF);
+
+        }
+
+            if(event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(ModBlocks.RITUAL_STONE);
 
             event.accept(ModBlocks.INFUSED_STONE);

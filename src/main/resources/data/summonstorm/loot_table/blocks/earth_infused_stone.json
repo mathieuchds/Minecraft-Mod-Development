@@ -26,7 +26,7 @@
                   }
                 }
               ],
-              "name": "summonstorm:infused_stone"
+              "name": "summonstorm:earth_infused_stone"
             },
             {
               "type": "minecraft:item",
@@ -49,7 +49,7 @@
                   "function": "minecraft:explosion_decay"
                 }
               ],
-              "name": "summonstorm:summoning_shard"
+              "name": "summonstorm:earth_summoning_shard"
             }
           ]
         }
@@ -57,5 +57,5 @@
       "rolls": 1.0
     }
   ],
-  "random_sequence": "summonstorm:blocks/infused_stone"
+  "random_sequence": "summonstorm:blocks/earth_infused_stone"
 }

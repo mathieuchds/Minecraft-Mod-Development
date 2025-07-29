@@ -33,6 +33,10 @@ public class ModCreativeModeTabs {
                         output.accept(ModItems.AIR_SUMMONING_SHARD.get());
                         output.accept(ModItems.AIR_SUMMONING_GEM.get());
 
+                        // Tools
+                        output.accept(ModItems.WEATHER_STAFF.get());
+
+
 
                         // Blocs
                         output.accept(ModBlocks.RITUAL_STONE.get());

@@ -2,6 +2,7 @@ package fr.petitzec.summonstorm.item;
 
 import com.google.common.eventbus.EventBus;
 import fr.petitzec.summonstorm.SummonStorm;
+import fr.petitzec.summonstorm.item.custom.WeatherItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -11,6 +12,8 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
         DeferredRegister.create(ForgeRegistries.ITEMS, SummonStorm.MOD_ID);
+
+    // GEMS
 
     public static final RegistryObject<Item> SUMMONING_SHARD = ITEMS.register("summoning_shard",
             () -> new Item(new Item.Properties()));
@@ -47,6 +50,15 @@ public class ModItems {
 
     public static final RegistryObject<Item> AIR_SUMMONING_GEM = ITEMS.register("air_summoning_gem",
             () -> new Item(new Item.Properties()));
+
+
+    // UNIC ITEMS
+
+    public static final RegistryObject<Item> WEATHER_STAFF = ITEMS.register("weather_staff",
+            () -> new WeatherItem(new Item.Properties()));
+
+
+
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

@@ -1,6 +1,11 @@
 {
   "replace": false,
   "values": [
-    "summonstorm:infused_stone"
+    "summonstorm:infused_stone",
+    "summonstorm:fire_infused_stone",
+    "summonstorm:water_infused_stone",
+    "summonstorm:earth_infused_stone",
+    "summonstorm:verdant_infused_stone",
+    "summonstorm:air_infused_stone"
   ]
 }
