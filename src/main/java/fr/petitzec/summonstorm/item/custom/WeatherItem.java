@@ -1,6 +1,10 @@
 package fr.petitzec.summonstorm.item.custom;
 
+import fr.petitzec.summonstorm.sound.ChargingSoundInstance;
+import fr.petitzec.summonstorm.sound.ModSounds;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -21,19 +25,14 @@ public class WeatherItem extends BowItem {
     public WeatherItem(Properties properties) {
         super(properties);
     }
+    private boolean isChargingSoundPlaying = false;
+
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         player.startUsingItem(hand);
-        System.out.println("useeeeeeeeee");
         return InteractionResultHolder.consume(player.getItemInHand(hand));
     }
-
-
-    //@Override
-    /*public int getUseDuration(ItemStack stack) {
-        return 80;
-    }*/
 
 
     @Override
@@ -48,6 +47,10 @@ public class WeatherItem extends BowItem {
         if (level.isClientSide && livingEntity instanceof Player player) {
             int elapsed = Math.max(0, getUseDuration(stack, livingEntity) - remainingUseTicks);
             System.out.format("elapsed : %d", elapsed);
+            if (!isChargingSoundPlaying) {
+                Minecraft.getInstance().getSoundManager().play(new ChargingSoundInstance(ModSounds.WEATHER_STAFF_USE.get(), (LocalPlayer) player));
+                isChargingSoundPlaying = true;
+            }
 
             for (int i = 0; i < elapsed / 10 + 1; i++) {
                 level.addParticle(ParticleTypes.ENCHANT,
@@ -57,10 +60,6 @@ public class WeatherItem extends BowItem {
                         0, 0.05, 0
                 );
             }
-
-            if (elapsed == 1) {
-                player.playSound(SoundEvents.TOTEM_USE, 0.5f, 1.2f);
-            }
         }
     }
 
@@ -68,6 +67,7 @@ public class WeatherItem extends BowItem {
     @Override
     public void releaseUsing(@NotNull ItemStack stack, Level level, @NotNull LivingEntity livingEntity, int remainingUseTicks) {
         int chargeTime = Math.max(0, getUseDuration(stack, livingEntity) - remainingUseTicks);
+        isChargingSoundPlaying = false;
         System.out.format("charge time : %d", chargeTime);
         if (!level.isClientSide && livingEntity instanceof Player player && level instanceof ServerLevel serverLevel) {
             if (chargeTime < 80) {
@@ -83,7 +83,7 @@ public class WeatherItem extends BowItem {
             if (!isRaining && !isThundering) {
                 serverLevel.setWeatherParameters(0, 6000, true, false);
                 player.displayClientMessage(Component.literal("The weather turns rainy...").withStyle(ChatFormatting.DARK_BLUE), true);
-                serverLevel.playSound(null, player.blockPosition(), SoundEvents.WEATHER_RAIN, SoundSource.PLAYERS, 1.0f, 1.0f);
+                serverLevel.playSound(null, player.blockPosition(), ModSounds.WEATHER_STAFF_USE_END_RAIN.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
             } else if (isRaining && !isThundering) {
                 serverLevel.setWeatherParameters(0, 6000, true, true);
                 player.displayClientMessage(Component.literal("A storm is coming...").withStyle(ChatFormatting.DARK_GRAY), true);
@@ -91,7 +91,7 @@ public class WeatherItem extends BowItem {
             } else {
                 serverLevel.setWeatherParameters(0, 6000, false, false);
                 player.displayClientMessage(Component.literal("Calm returns to the world.").withStyle(ChatFormatting.GOLD), true);
-                serverLevel.playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1.0f, 1.0f);
+                serverLevel.playSound(null, player.blockPosition(), ModSounds.WEATHER_STAFF_USE_END_SUN.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
             }
         }
     }

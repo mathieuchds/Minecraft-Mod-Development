@@ -47,6 +47,12 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.AIR_INFUSED_STONE.get());
                         output.accept(ModBlocks.EARTH_INFUSED_STONE.get());
                         output.accept(ModBlocks.VERDANT_INFUSED_STONE.get());
+                        output.accept(ModBlocks.INFUSED_DEEPSLATE.get());
+                        output.accept(ModBlocks.FIRE_INFUSED_DEEPSLATE.get());
+                        output.accept(ModBlocks.WATER_INFUSED_DEEPSLATE.get());
+                        output.accept(ModBlocks.AIR_INFUSED_DEEPSLATE.get());
+                        output.accept(ModBlocks.EARTH_INFUSED_DEEPSLATE.get());
+                        output.accept(ModBlocks.VERDANT_INFUSED_DEEPSLATE.get());
                     })
                     .build());
 

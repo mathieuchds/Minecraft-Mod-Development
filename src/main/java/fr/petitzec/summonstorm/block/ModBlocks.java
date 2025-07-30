@@ -50,6 +50,30 @@ public class ModBlocks {
             ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
                     .strength(4f).requiresCorrectToolForDrops().sound(SoundType.STONE)));
 
+    public static final RegistryObject<Block> INFUSED_DEEPSLATE = registerBlock("infused_deepslate",
+            ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
+                    .strength(6f).requiresCorrectToolForDrops().sound(SoundType.DEEPSLATE)));
+
+    public static final RegistryObject<Block> FIRE_INFUSED_DEEPSLATE = registerBlock("fire_infused_deepslate",
+            ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
+                    .strength(6f).requiresCorrectToolForDrops().sound(SoundType.DEEPSLATE)));
+
+    public static final RegistryObject<Block> WATER_INFUSED_DEEPSLATE = registerBlock("water_infused_deepslate",
+            ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
+                    .strength(6f).requiresCorrectToolForDrops().sound(SoundType.DEEPSLATE)));
+
+    public static final RegistryObject<Block> EARTH_INFUSED_DEEPSLATE = registerBlock("earth_infused_deepslate",
+            ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
+                    .strength(6f).requiresCorrectToolForDrops().sound(SoundType.DEEPSLATE)));
+
+    public static final RegistryObject<Block> AIR_INFUSED_DEEPSLATE = registerBlock("air_infused_deepslate",
+            ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
+                    .strength(6f).requiresCorrectToolForDrops().sound(SoundType.DEEPSLATE)));
+
+    public static final RegistryObject<Block> VERDANT_INFUSED_DEEPSLATE = registerBlock("verdant_infused_deepslate",
+            ()-> new DropExperienceBlock(UniformInt.of(1, 4), BlockBehaviour.Properties.of()
+                    .strength(6f).requiresCorrectToolForDrops().sound(SoundType.DEEPSLATE)));
+
 
 
 

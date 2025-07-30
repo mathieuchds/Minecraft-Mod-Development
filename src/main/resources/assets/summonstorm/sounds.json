@@ -1,11 +1,20 @@
 {
-  "thunder_call": {
-    "category": "weather",
+  "weather_staff_use" : {
+    "subtitle": "sounds.summonstorm.weather_staff_use",
     "sounds": [
-      {
-        "name": "summonstorm:thunder_call",
-        "stream": false
-      }
+      "summonstorm:weather_staff_use"
+    ]
+  },
+  "weather_staff_use_end_sun" : {
+    "subtitle": "sounds.summonstorm.weather_staff_use_end_sun",
+    "sounds": [
+      "summonstorm:weather_staff_use_end_sun"
+    ]
+  },
+  "weather_staff_use_end_rain" : {
+    "subtitle": "sounds.summonstorm.weather_staff_use_end_rain",
+    "sounds": [
+      "summonstorm:weather_staff_use_end_rain"
     ]
   }
 }

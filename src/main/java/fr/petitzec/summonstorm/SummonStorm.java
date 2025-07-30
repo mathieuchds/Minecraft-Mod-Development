@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import fr.petitzec.summonstorm.block.ModBlocks;
 import fr.petitzec.summonstorm.item.ModCreativeModeTabs;
 import fr.petitzec.summonstorm.item.ModItems;
+import fr.petitzec.summonstorm.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.food.FoodProperties;
@@ -53,6 +54,7 @@ public class SummonStorm {
 
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
+        ModSounds.SOUND_EVENTS.register(modEventBus);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
@@ -99,6 +101,12 @@ public class SummonStorm {
             event.accept(ModBlocks.EARTH_INFUSED_STONE);
             event.accept(ModBlocks.AIR_INFUSED_STONE);
             event.accept(ModBlocks.VERDANT_INFUSED_STONE);
+            event.accept(ModBlocks.INFUSED_DEEPSLATE);
+            event.accept(ModBlocks.FIRE_INFUSED_DEEPSLATE);
+            event.accept(ModBlocks.WATER_INFUSED_DEEPSLATE);
+            event.accept(ModBlocks.EARTH_INFUSED_DEEPSLATE);
+            event.accept(ModBlocks.AIR_INFUSED_DEEPSLATE);
+            event.accept(ModBlocks.VERDANT_INFUSED_DEEPSLATE);
         }
     }
 
