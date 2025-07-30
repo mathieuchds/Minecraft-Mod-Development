@@ -23,6 +23,12 @@
   "block.summonstorm.earth_infused_stone": "Earth Infused Stone",
   "block.summonstorm.air_infused_stone": "Air Infused Stone",
   "block.summonstorm.verdant_infused_stone": "Verdant Infused Stone",
+  "block.summonstorm.infused_deepslate": "Infused Deepslate",
+  "block.summonstorm.fire_infused_deepslate": "Fire Infused Deepslate",
+  "block.summonstorm.water_infused_deepslate": "Water Infused Deepslate",
+  "block.summonstorm.earth_infused_deepslate": "Earth Infused Deepslate",
+  "block.summonstorm.air_infused_deepslate": "Air Infused Deepslate",
+  "block.summonstorm.verdant_infused_deepslate": "Verdant Infused Deepslate",
 
 
   "creativetab.summonstorm.summoning_items" : "Summon Storm Mod Items"

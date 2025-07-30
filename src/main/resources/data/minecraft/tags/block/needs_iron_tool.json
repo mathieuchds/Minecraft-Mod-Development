@@ -6,6 +6,12 @@
     "summonstorm:water_infused_stone",
     "summonstorm:earth_infused_stone",
     "summonstorm:verdant_infused_stone",
-    "summonstorm:air_infused_stone"
+    "summonstorm:air_infused_stone",
+    "summonstorm:infused_deepslate",
+    "summonstorm:fire_infused_deepslate",
+    "summonstorm:water_infused_deepslate",
+    "summonstorm:earth_infused_deepslate",
+    "summonstorm:verdant_infused_deepslate",
+    "summonstorm:air_infused_deepslate"
   ]
 }
