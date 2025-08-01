@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#summonstorm:air_biomes",
+  "features": "summonstorm:air_infused_stone_placed",
+  "step": "underground_ores"
+}

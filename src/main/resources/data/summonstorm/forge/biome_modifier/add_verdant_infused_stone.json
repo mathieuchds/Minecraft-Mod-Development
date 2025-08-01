@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#summonstorm:verdant_biomes",
+  "features": "summonstorm:verdant_infused_stone_placed",
+  "step": "underground_ores"
+}

@@ -20,6 +20,11 @@ import java.util.List;
 public class ModPlacedFeatures {
 
     public static final ResourceKey<PlacedFeature> INFUSED_STONE_PLACED_KEY = registerKey("infused_stone_placed");
+    public static final ResourceKey<PlacedFeature> FIRE_INFUSED_STONE_PLACED_KEY = registerKey("fire_infused_stone_placed");
+    public static final ResourceKey<PlacedFeature> WATER_INFUSED_STONE_PLACED_KEY = registerKey("water_infused_stone_placed");
+    public static final ResourceKey<PlacedFeature> AIR_INFUSED_STONE_PLACED_KEY = registerKey("air_infused_stone_placed");
+    public static final ResourceKey<PlacedFeature> VERDANT_INFUSED_STONE_PLACED_KEY = registerKey("verdant_infused_stone_placed");
+    public static final ResourceKey<PlacedFeature> EARTH_INFUSED_STONE_PLACED_KEY = registerKey("earth_infused_stone_placed");
     //public static final ResourceKey<PlacedFeature> NETHER_ALEXANDRITE_ORE_PLACED_KEY = registerKey("nether_alexandrite_ore_placed");
     //public static final ResourceKey<PlacedFeature> END_ALEXANDRITE_ORE_PLACED_KEY = registerKey("end_alexandrite_ore_placed");
 
@@ -28,10 +33,30 @@ public class ModPlacedFeatures {
         System.out.println("---- Placed Features registered ----");
 
         var configuredFeatures = context.lookup(Registries.CONFIGURED_FEATURE);
-
+        // 12 nb de tentative de gen. par chunck
         register(context, INFUSED_STONE_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.INFUSED_STONE_KEY),
-                ModOrePlacement.commonOrePlacement(12,
-                        HeightRangePlacement.triangle(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(80))));
+                ModOrePlacement.commonOrePlacement(8,
+                        HeightRangePlacement.triangle(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(40))));
+
+        register(context, FIRE_INFUSED_STONE_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.FIRE_INFUSED_STONE_KEY),
+                ModOrePlacement.commonOrePlacement(8,
+                        HeightRangePlacement.triangle(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(40))));
+
+        register(context, WATER_INFUSED_STONE_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.WATER_INFUSED_STONE_KEY),
+                ModOrePlacement.commonOrePlacement(8,
+                        HeightRangePlacement.triangle(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(40))));
+
+        register(context, AIR_INFUSED_STONE_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.AIR_INFUSED_STONE_KEY),
+                ModOrePlacement.commonOrePlacement(8,
+                        HeightRangePlacement.triangle(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(40))));
+
+        register(context, EARTH_INFUSED_STONE_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.EARTH_INFUSED_STONE_KEY),
+                ModOrePlacement.commonOrePlacement(8,
+                        HeightRangePlacement.triangle(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(40))));
+
+        register(context, VERDANT_INFUSED_STONE_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.VERDANT_INFUSED_STONE_KEY),
+                ModOrePlacement.commonOrePlacement(8,
+                        HeightRangePlacement.triangle(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(40))));
         /*register(context, NETHER_ALEXANDRITE_ORE_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.NETHER_ALEXANDRITE_ORE_KEY),
                 ModOrePlacement.commonOrePlacement(12,
                         HeightRangePlacement.uniform(VerticalAnchor.absolute(-64), VerticalAnchor.absolute(80))));
@@ -47,9 +72,7 @@ public class ModPlacedFeatures {
 
     private static void register(BootstrapContext<PlacedFeature> context, ResourceKey<PlacedFeature> key, Holder<ConfiguredFeature<?, ?>> configuration,
                                  List<PlacementModifier> modifiers) {
-        System.out.println("register placed");
         context.register(key, new PlacedFeature(configuration, List.copyOf(modifiers)));
-        System.out.println("register placed after");
     }
 
     /*public static final DeferredRegister<PlacedFeature> PLACED_FEATURES =

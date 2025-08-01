@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:flower_forest",
+    "minecraft:jungle",
+    "minecraft:bamboo_jungle",
+    "minecraft:sparse_jungle",
+    "minecraft:dark_forest",
+    "minecraft:mangrove_swamp",
+    "minecraft:lush_caves",
+    "minecraft:sunflower_plains"
+  ]
+}
