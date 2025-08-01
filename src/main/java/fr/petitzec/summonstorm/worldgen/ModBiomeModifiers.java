@@ -19,7 +19,9 @@ public class ModBiomeModifiers {
     public static final ResourceKey<BiomeModifier> ADD_END_ALEXANDRITE_ORE = registerKey("add_end_alexandrite_ore");*/
 
     public static void bootstrap(BootstrapContext<BiomeModifier> context) {
+        System.out.println("before lookup");
         var placedFeature = context.lookup(Registries.PLACED_FEATURE);
+        System.out.println("after lookup");
         var biomes = context.lookup(Registries.BIOME);
 
         context.register(ADD_INFUSED_STONE, new ForgeBiomeModifiers.AddFeaturesBiomeModifier(

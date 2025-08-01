@@ -5,6 +5,8 @@ import fr.petitzec.summonstorm.block.ModBlocks;
 import fr.petitzec.summonstorm.item.ModCreativeModeTabs;
 import fr.petitzec.summonstorm.item.ModItems;
 import fr.petitzec.summonstorm.sound.ModSounds;
+import fr.petitzec.summonstorm.worldgen.ModFeatures;
+import fr.petitzec.summonstorm.worldgen.ModPlacedFeatures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.food.FoodProperties;
@@ -55,6 +57,13 @@ public class SummonStorm {
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModSounds.SOUND_EVENTS.register(modEventBus);
+
+        ModFeatures.CONFIGURED_FEATURES.register(modEventBus);
+        ModFeatures.PLACED_FEATURES.register(modEventBus);
+
+
+
+        //ModDataComponentTypes.register(modEventBus);
 
 
         // Register the item to a creative tab

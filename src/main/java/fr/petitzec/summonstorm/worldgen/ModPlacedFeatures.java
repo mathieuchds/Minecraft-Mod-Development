@@ -11,6 +11,9 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.placement.HeightRangePlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
 
@@ -21,6 +24,9 @@ public class ModPlacedFeatures {
     //public static final ResourceKey<PlacedFeature> END_ALEXANDRITE_ORE_PLACED_KEY = registerKey("end_alexandrite_ore_placed");
 
     public static void bootstrap(BootstrapContext<PlacedFeature> context) {
+
+        System.out.println("---- Placed Features registered ----");
+
         var configuredFeatures = context.lookup(Registries.CONFIGURED_FEATURE);
 
         register(context, INFUSED_STONE_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.INFUSED_STONE_KEY),
@@ -41,6 +47,23 @@ public class ModPlacedFeatures {
 
     private static void register(BootstrapContext<PlacedFeature> context, ResourceKey<PlacedFeature> key, Holder<ConfiguredFeature<?, ?>> configuration,
                                  List<PlacementModifier> modifiers) {
+        System.out.println("register placed");
         context.register(key, new PlacedFeature(configuration, List.copyOf(modifiers)));
+        System.out.println("register placed after");
     }
+
+    /*public static final DeferredRegister<PlacedFeature> PLACED_FEATURES =
+            DeferredRegister.create(Registries.PLACED_FEATURE, SummonStorm.MOD_ID);
+
+    public static final RegistryObject<PlacedFeature> INFUSED_STONE_PLACED =
+            PLACED_FEATURES.register("infused_stone_placed", () ->
+                    new PlacedFeature(Holder.direct(null), List.of())
+            );
+
+
+    public static void register(IEventBus eventBus) {
+        PLACED_FEATURES.register(eventBus);
+    }*/
+
+
 }
