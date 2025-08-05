@@ -1,6 +1,0 @@
-{
-  "type": "forge:add_features",
-  "biomes": "#summonstorm:water_biomes",
-  "features": "summonstorm:water_infused_stone_placed",
-  "step": "underground_ores"
-}

@@ -108,7 +108,12 @@ public class SummonStorm {
 
         }
 
-            if(event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
+        if(event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
+            event.accept(ModItems.FIRE_SPIRIT_SPAWN_EGG);
+
+        }
+
+        if(event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(ModBlocks.RITUAL_STONE);
 
             event.accept(ModBlocks.INFUSED_STONE);
