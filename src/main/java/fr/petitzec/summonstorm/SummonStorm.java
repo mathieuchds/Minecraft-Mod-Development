@@ -2,12 +2,17 @@ package fr.petitzec.summonstorm;
 
 import com.mojang.logging.LogUtils;
 import fr.petitzec.summonstorm.block.ModBlocks;
+import fr.petitzec.summonstorm.entity.ModEntities;
+import fr.petitzec.summonstorm.entity.client.FireSpiritRenderer;
+import fr.petitzec.summonstorm.entity.custom.FireSpirit;
 import fr.petitzec.summonstorm.item.ModCreativeModeTabs;
 import fr.petitzec.summonstorm.item.ModItems;
 import fr.petitzec.summonstorm.sound.ModSounds;
+import fr.petitzec.summonstorm.util.ModItemProperties;
 import fr.petitzec.summonstorm.worldgen.ModFeatures;
 import fr.petitzec.summonstorm.worldgen.ModPlacedFeatures;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
@@ -56,6 +61,7 @@ public class SummonStorm {
 
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
+        ModEntities.ENTITY_TYPES.register(modEventBus);
         ModSounds.SOUND_EVENTS.register(modEventBus);
 
         ModFeatures.CONFIGURED_FEATURES.register(modEventBus);
@@ -131,7 +137,9 @@ public class SummonStorm {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event){
+            ModItemProperties.addCustomItemProperties();
 
+            EntityRenderers.register(ModEntities.FIRE_SPIRIT.get(), FireSpiritRenderer::new);
         }
     }
 }

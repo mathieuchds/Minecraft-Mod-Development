@@ -1,0 +1,13 @@
+{
+  "type": "summonstorm:fire_spirit",
+  "heightmap": "motion_blocking_no_leaves",
+  "placement": "on_ground",
+  "predicate": {
+    "type": "minecraft:time_check",
+    "value": {
+      "period": 24000,
+      "min_inclusive": 13000,
+      "max_exclusive": 23000
+    }
+  }
+}

@@ -1,6 +1,7 @@
 package fr.petitzec.summonstorm.worldgen;
 
 import fr.petitzec.summonstorm.SummonStorm;
+import fr.petitzec.summonstorm.entity.ModEntities;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
@@ -9,10 +10,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraftforge.common.world.BiomeModifier;
 import net.minecraftforge.common.world.ForgeBiomeModifiers;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
+
+import java.util.List;
+
+import static net.minecraftforge.registries.ForgeRegistries.Keys.BIOME_MODIFIERS;
 
 
 public class ModBiomeModifiers {
@@ -23,6 +30,13 @@ public class ModBiomeModifiers {
     public static final ResourceKey<BiomeModifier> ADD_AIR_INFUSED_STONE = registerKey("add_air_infused_stone");
     public static final ResourceKey<BiomeModifier> ADD_EARTH_INFUSED_STONE = registerKey("add_earth_infused_stone");
     public static final ResourceKey<BiomeModifier> ADD_VERDANT_INFUSED_STONE = registerKey("add_verdant_infused_stone");
+    /*public static final RegistryObject<BiomeModifier> ADD_FIRE_SPIRIT_SPAWNS =
+            BIOME_MODIFIERS.register("add_fire_spirit_spawn", () ->
+                    new ForgeBiomeModifiers.AddSpawnsBiomeModifier(
+                            new HolderSet.Named<>(Registries.BIOME, new ResourceLocation("summonstorm", "fire_biomes")),
+                            List.of(new MobSpawnSettings.SpawnerData(ModEntities.FIRE_SPIRIT.get(), 20, 1, 2))
+                    )
+            );*/
     /*public static final ResourceKey<BiomeModifier> ADD_NETHER_ALEXANDRITE_ORE = registerKey("add_nether_alexandrite_ore");
     public static final ResourceKey<BiomeModifier> ADD_END_ALEXANDRITE_ORE = registerKey("add_end_alexandrite_ore");*/
 
@@ -54,6 +68,9 @@ public class ModBiomeModifiers {
                 Registries.BIOME,
                 ResourceLocation.fromNamespaceAndPath("summonstorm", "verdant_biomes")
         );
+
+        //System.out.println("Fire biomes: " + biomes.getOrThrow(FIRE_BIOMES).stream().toList());
+
 
 
         context.register(ADD_INFUSED_STONE, new ForgeBiomeModifiers.AddFeaturesBiomeModifier(
@@ -101,6 +118,7 @@ public class ModBiomeModifiers {
     }
 
     private static ResourceKey<BiomeModifier> registerKey(String name) {
-        return ResourceKey.create(ForgeRegistries.Keys.BIOME_MODIFIERS, ResourceLocation.fromNamespaceAndPath(SummonStorm.MOD_ID, name));
+        return ResourceKey.create(BIOME_MODIFIERS, ResourceLocation.fromNamespaceAndPath(SummonStorm.MOD_ID, name));
     }
+
 }

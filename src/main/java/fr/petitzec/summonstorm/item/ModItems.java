@@ -2,8 +2,10 @@ package fr.petitzec.summonstorm.item;
 
 import com.google.common.eventbus.EventBus;
 import fr.petitzec.summonstorm.SummonStorm;
+import fr.petitzec.summonstorm.entity.ModEntities;
 import fr.petitzec.summonstorm.item.custom.WeatherItem;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -56,6 +58,12 @@ public class ModItems {
 
     public static final RegistryObject<Item> WEATHER_STAFF = ITEMS.register("weather_staff",
             () -> new WeatherItem(new Item.Properties()));
+
+
+    // EGGS
+
+    public static final RegistryObject<Item> FIRE_SPIRIT_SPAWN_EGG = ITEMS.register("fire_spirit_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.FIRE_SPIRIT, 0xFF7D00,0xE82802, new Item.Properties()));
 
 
 

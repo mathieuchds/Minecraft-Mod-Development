@@ -1,0 +1,12 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#summonstorm:fire_biomes",
+  "spawners": [
+    {
+      "type": "summonstorm:fire_spirit",
+      "weight": 20,
+      "minCount": 1,
+      "maxCount": 3
+    }
+  ]
+}

@@ -12,8 +12,9 @@
   "item.summonstorm.air_summoning_shard": "Air Summoning Shard",
   "item.summonstorm.air_summoning_gem": "Air Summoning Gem",
 
-
   "item.summonstorm.weather_staff": "Weather Staff",
+
+  "item.summonstorm.fire_spirit_spawn_egg": "Fire Spirit Spawn Egg",
 
   "block.summonstorm.ritual_stone": "Ritual Stone Block",
 
@@ -31,5 +32,7 @@
   "block.summonstorm.verdant_infused_deepslate": "Verdant Infused Deepslate",
 
 
-  "creativetab.summonstorm.summoning_items" : "Summon Storm Mod Items"
+  "creativetab.summonstorm.summoning_items" : "Summon Storm Mod Items",
+
+  "entity.summonstorm.fire_spirit": "Fire Spirit"
 }
