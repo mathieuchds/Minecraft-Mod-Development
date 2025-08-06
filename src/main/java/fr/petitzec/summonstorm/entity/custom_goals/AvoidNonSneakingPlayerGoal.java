@@ -4,18 +4,26 @@ import fr.petitzec.summonstorm.entity.custom.FireSpirit;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.projectile.SmallFireball;
+import net.minecraft.server.level.ServerLevel;
+
 
 import java.util.EnumSet;
 
 public class AvoidNonSneakingPlayerGoal extends Goal {
+    private enum State { LOOKING, FLEEING }
+
     private final FireSpirit fireSpirit;
     private Player targetPlayer = null;
     private int fleeTicks = 0;
-    private final int MAX_FLEE_TICKS = 40; // Durée de la fuite (2s)
+    private int lookTicks = 0;
+    private final int MAX_LOOK_TICKS = 10;
+    private final int MAX_FLEE_TICKS = 40;  // 2 secondes
+    private State currentState = State.LOOKING;
 
     public AvoidNonSneakingPlayerGoal(FireSpirit fireSpirit) {
         this.fireSpirit = fireSpirit;
-        this.setFlags(EnumSet.of(Flag.MOVE));
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
     @Override
@@ -30,13 +38,16 @@ public class AvoidNonSneakingPlayerGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return fleeTicks < MAX_FLEE_TICKS;
+        return (currentState == State.LOOKING && lookTicks < MAX_LOOK_TICKS) ||
+                (currentState == State.FLEEING && fleeTicks < MAX_FLEE_TICKS);
     }
 
     @Override
     public void start() {
-        fireSpirit.isFleeing = true;
+        fireSpirit.isFleeing = false;
+        lookTicks = 0;
         fleeTicks = 0;
+        currentState = State.LOOKING;
     }
 
     @Override
@@ -44,30 +55,75 @@ public class AvoidNonSneakingPlayerGoal extends Goal {
         fireSpirit.isFleeing = false;
         targetPlayer = null;
         fleeTicks = 0;
+        lookTicks = 0;
+        currentState = State.LOOKING;
         fireSpirit.moveTarget = null;
     }
 
     @Override
     public void tick() {
-        fleeTicks++;
         if (targetPlayer == null) return;
 
-        Vec3 mobPos = fireSpirit.position();
-        Vec3 playerPos = targetPlayer.position();
+        if (currentState == State.LOOKING) {
+            lookTicks++;
 
-        Vec3 away = mobPos.subtract(playerPos).normalize();
-        fireSpirit.setDeltaMovement(away.scale(0.6)); // fuite rapide
+            if (lookTicks < 10) {
+                // Pendant les 10 premiers ticks, le mob regarde le joueur
+                fireSpirit.getLookControl().setLookAt(
+                        targetPlayer.getX(),
+                        targetPlayer.getEyeY(),
+                        targetPlayer.getZ(),
+                        10.0F, // maxYawChange
+                        10.0F  // maxPitchChange
+                );
 
-        // Tourner dans la bonne direction
-        float yaw = (float) (Math.atan2(away.z, away.x) * (180F / Math.PI)) - 90F;
-        fireSpirit.setYRot(yaw);
-        fireSpirit.yBodyRot = yaw;
-        fireSpirit.yHeadRot = yaw;
+                double dx = targetPlayer.getX() - fireSpirit.getX();
+                double dz = targetPlayer.getZ() - fireSpirit.getZ();
+                float yaw = (float) (Math.atan2(dz, dx) * (180F / Math.PI)) - 90F;
+                fireSpirit.setYRot(yaw);
+                fireSpirit.yBodyRot = yaw;
+                fireSpirit.yHeadRot = yaw;
+            }
 
-        fireSpirit.moveTarget = null; // empêche le vol aléatoire
+
+            if (lookTicks >= MAX_LOOK_TICKS) {
+                currentState = State.FLEEING;
+                fireSpirit.isFleeing = true;
+            }
+
+        } else if (currentState == State.FLEEING) {
+            fleeTicks++;
+
+            Vec3 mobPos = fireSpirit.position();
+            Vec3 playerPos = targetPlayer.position();
+            Vec3 away = mobPos.subtract(playerPos).normalize();
+
+            // Mouvement
+            fireSpirit.setDeltaMovement(away.scale(0.6));
+            fireSpirit.setYRot((float) (Math.atan2(away.z, away.x) * (180F / Math.PI)) - 90F);
+            fireSpirit.yBodyRot = fireSpirit.getYRot();
+            fireSpirit.yHeadRot = fireSpirit.getYRot();
+            fireSpirit.moveTarget = null;
+
+            // Fireball
+            if (fireSpirit.fireballCooldown <= 0 && fireSpirit.level() instanceof ServerLevel) {
+                Vec3 fireballDir = playerPos.subtract(mobPos).normalize().scale(0.5);
+
+                SmallFireball fireball = new SmallFireball(
+                        fireSpirit.level(),     // Level
+                        fireSpirit,             // Owner
+                        fireballDir             // Direction
+                );
+
+                fireball.setPos(
+                        fireSpirit.getX(),
+                        fireSpirit.getY() + fireSpirit.getBbHeight() / 2.0,
+                        fireSpirit.getZ()
+                );
+
+                fireSpirit.level().addFreshEntity(fireball);
+                fireSpirit.fireballCooldown = 40;
+            }
+        }
     }
 }
-
-
-
-

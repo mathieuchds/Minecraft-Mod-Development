@@ -1,12 +1,14 @@
 package fr.petitzec.summonstorm.entity.custom;
 
 import fr.petitzec.summonstorm.entity.custom_goals.AvoidNonSneakingPlayerGoal;
+import fr.petitzec.summonstorm.entity.custom_goals.FireSpiritSeekLavaGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.FlyingMob;
@@ -18,8 +20,13 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.projectile.SmallFireball;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
+
 
 import java.util.EnumSet;
 
@@ -31,6 +38,7 @@ public class FireSpirit extends FlyingMob {
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
     public boolean isFleeing = false;
+    public int fireballCooldown = 0;
 
 
     public FireSpirit(EntityType<? extends FireSpirit> type, Level world) {
@@ -42,7 +50,7 @@ public class FireSpirit extends FlyingMob {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 4.0D)
+                .add(Attributes.MAX_HEALTH, 1.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.2D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5D)
                 .add(Attributes.FLYING_SPEED, 0.1D);
@@ -52,8 +60,8 @@ public class FireSpirit extends FlyingMob {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new AvoidNonSneakingPlayerGoal(this));
-        this.goalSelector.addGoal(1, new FlyAroundGoal());
-        // Ajoute ici d'autres goals (attaque, fuite, etc.)
+        this.goalSelector.addGoal(2, new FlyAroundGoal());
+        this.goalSelector.addGoal(1, new FireSpiritSeekLavaGoal(this));
     }
 
     @Override
@@ -61,94 +69,12 @@ public class FireSpirit extends FlyingMob {
         return new BodyRotationControl(this);
     }
 
-    // Exemple simple de contrôle du mouvement
-    class MyFlyingMoveControl extends MoveControl {
-        public MyFlyingMoveControl(Mob mob) {
-            super(mob);
-        }
-
-        @Override
-        public void tick() {
-            if (!FireSpirit.this.isNoGravity()) {
-                FireSpirit.this.setNoGravity(true);
-            }
-
-            if (FireSpirit.this.moveTarget != null) {
-                double dx = moveTarget.x - FireSpirit.this.getX();
-                double dy = moveTarget.y - FireSpirit.this.getY();
-                double dz = moveTarget.z - FireSpirit.this.getZ();
-
-                double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                if (dist < 1.0) {
-                    FireSpirit.this.setDeltaMovement(FireSpirit.this.getDeltaMovement().scale(0.5));
-                    return;
-                }
-
-                double speed = FireSpirit.this.getAttributeValue(Attributes.FLYING_SPEED);
-                double vx = dx / dist * speed;
-                double vy = dy / dist * speed;
-                double vz = dz / dist * speed;
-
-                FireSpirit.this.setDeltaMovement(new Vec3(vx, vy, vz));
-                FireSpirit.this.setYRot((float) (Math.atan2(dz, dx) * (180F / Math.PI)) - 90F);
-                FireSpirit.this.yBodyRot = FireSpirit.this.getYRot();
-                FireSpirit.this.yBodyRot = FireSpirit.this.getYRot();
-                FireSpirit.this.yHeadRot = FireSpirit.this.getYRot();
-
-            }
-        }
-    }
-
-    // Exemple simple de but de vol aléatoire
-    class FlyAroundGoal extends Goal {
-        public FlyAroundGoal() {
-            this.setFlags(EnumSet.of(Flag.MOVE));
-        }
-
-        @Override
-        public boolean canUse() {
-            return !FireSpirit.this.isFleeing; // NE VOLE PAS si en fuite
-        }
-
-        @Override
-        public void tick() {
-            if (FireSpirit.this.moveTarget == null || FireSpirit.this.position().distanceTo(FireSpirit.this.moveTarget) < 2) {
-                double x = FireSpirit.this.getX() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
-                double y = FireSpirit.this.getY() + (FireSpirit.this.getRandom().nextDouble() - 0.5) * 8;
-                double z = FireSpirit.this.getZ() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
-                Vec3 target = new Vec3(x, y, z);
-                if (FireSpirit.this.level().noCollision(FireSpirit.this.getBoundingBox().move(target.subtract(FireSpirit.this.position())))) {
-                    FireSpirit.this.moveTarget = target;
-                }
-            }
-        }
-
-        @Override
-        public void start() {
-            double x = FireSpirit.this.getX() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
-            double y = FireSpirit.this.getY() + (FireSpirit.this.getRandom().nextDouble() - 0.5) * 8;
-            double z = FireSpirit.this.getZ() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
-            FireSpirit.this.moveTarget = new Vec3(x, y, z);
-        }
-
-
-
-    }
-
-    class MyFlyingLookControl extends LookControl {
-        public MyFlyingLookControl(Mob mob) {
-            super(mob);
-        }
-
-        @Override
-        public void tick() {
-            // Optionnel, gérer la rotation de la tête si besoin
-        }
-    }
-
     @Override
     public void tick() {
         super.tick();
+        if (fireballCooldown > 0) {
+            fireballCooldown--;
+        }
         Vec3 currentPosition = this.position();
         if (currentPosition.distanceTo(lastPosition) < 0.05) {
             stuckCounter++;
@@ -199,4 +125,112 @@ public class FireSpirit extends FlyingMob {
         return pos.getY();
     }
 
+    @Override
+    public boolean fireImmune() {
+        return true;
+    }
+
+    @Override
+    public boolean isOnFire() {
+        return false;
+    }
+
+    // Exemple simple de contrôle du mouvement
+    class MyFlyingMoveControl extends MoveControl {
+        public MyFlyingMoveControl(Mob mob) {
+            super(mob);
+        }
+
+        @Override
+        public void tick() {
+            if (!FireSpirit.this.isNoGravity()) {
+                FireSpirit.this.setNoGravity(true);
+            }
+
+            if (FireSpirit.this.moveTarget != null) {
+                double dx = moveTarget.x - FireSpirit.this.getX();
+                double dy = moveTarget.y - FireSpirit.this.getY();
+                double dz = moveTarget.z - FireSpirit.this.getZ();
+
+                double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                if (dist < 1.0) {
+                    FireSpirit.this.setDeltaMovement(FireSpirit.this.getDeltaMovement().scale(0.5));
+                    return;
+                }
+
+                double speed = FireSpirit.this.getAttributeValue(Attributes.FLYING_SPEED);
+                double vx = dx / dist * speed;
+                double vy = dy / dist * speed;
+                double vz = dz / dist * speed;
+
+                FireSpirit.this.setDeltaMovement(new Vec3(vx, vy, vz));
+                FireSpirit.this.setYRot((float) (Math.atan2(dz, dx) * (180F / Math.PI)) - 90F);
+                FireSpirit.this.yBodyRot = FireSpirit.this.getYRot();
+                FireSpirit.this.yBodyRot = FireSpirit.this.getYRot();
+                FireSpirit.this.yHeadRot = FireSpirit.this.getYRot();
+
+            }
+        }
+    }
+
+
+    class MyFlyingLookControl extends LookControl {
+        public MyFlyingLookControl(Mob mob) {
+            super(mob);
+        }
+
+        @Override
+        public void tick() {
+            // Optionnel, gérer la rotation de la tête si besoin
+        }
+    }
+
+
+    class FlyAroundGoal extends Goal {
+        public FlyAroundGoal() {
+            this.setFlags(EnumSet.of(Flag.MOVE));
+        }
+
+        @Override
+        public boolean canUse() {
+            return !FireSpirit.this.isFleeing; // NE VOLE PAS si en fuite
+        }
+
+        @Override
+        public void tick() {
+            if (FireSpirit.this.moveTarget == null || FireSpirit.this.position().distanceTo(FireSpirit.this.moveTarget) < 2) {
+                double x = FireSpirit.this.getX() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
+                double y = FireSpirit.this.getY() + (FireSpirit.this.getRandom().nextDouble() - 0.5) * 8;
+                double z = FireSpirit.this.getZ() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
+
+                // Vérifier le bloc sous cette position (y-1) pour éviter lave ou feu
+                int yInt = Mth.floor(y);  // Mth.floor arrondit vers le bas
+                BlockPos posBelow = new BlockPos(Mth.floor(x), yInt - 1, Mth.floor(z));
+
+                Level level = FireSpirit.this.level();
+
+                if (!level.isEmptyBlock(posBelow)) {
+                    // Récupérer l’état du bloc sous la cible
+                    var blockState = level.getBlockState(posBelow);
+
+                    if (blockState.is(Blocks.LAVA) || blockState.is(Blocks.FIRE) || blockState.getFluidState().getType() == Fluids.LAVA) {
+                        y = posBelow.getY() + 3; // remonter au-dessus
+                    }
+                }
+
+                Vec3 target = new Vec3(x, y, z);
+                if (FireSpirit.this.level().noCollision(FireSpirit.this.getBoundingBox().move(target.subtract(FireSpirit.this.position())))) {
+                    FireSpirit.this.moveTarget = target;
+                }
+            }
+        }
+
+        @Override
+        public void start() {
+            double x = FireSpirit.this.getX() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
+            double y = FireSpirit.this.getY() + (FireSpirit.this.getRandom().nextDouble() - 0.5) * 8;
+            double z = FireSpirit.this.getZ() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
+            FireSpirit.this.moveTarget = new Vec3(x, y, z);
+        }
+    }
 }
