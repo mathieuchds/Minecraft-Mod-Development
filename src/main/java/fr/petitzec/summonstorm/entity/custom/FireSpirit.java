@@ -9,16 +9,15 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.AnimationState;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.FlyingMob;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
@@ -30,7 +29,7 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.EnumSet;
 
-public class FireSpirit extends FlyingMob {
+public class FireSpirit extends PathfinderMob {
 
     public Vec3 moveTarget = Vec3.ZERO;
     private Vec3 lastPosition = Vec3.ZERO;
@@ -61,8 +60,21 @@ public class FireSpirit extends FlyingMob {
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new AvoidNonSneakingPlayerGoal(this));
         this.goalSelector.addGoal(2, new FlyAroundGoal());
-        this.goalSelector.addGoal(1, new FireSpiritSeekLavaGoal(this));
+        this.goalSelector.addGoal(1, new FireSpiritSeekLavaGoal(this, 0.2D));
     }
+
+    @Override
+    public boolean causeFallDamage(float fallDistance, float damageMultiplier, DamageSource source) {
+        return false; // Ne prend jamais de dégâts de chute
+    }
+
+    public boolean pathfindDirectlyTowards(BlockPos pos) {
+        this.navigation.setMaxVisitedNodesMultiplier(10.0F);
+        this.navigation.moveTo(pos.getX(), pos.getY(), pos.getZ(), 1.0); // vitesse 1.0, à ajuster
+        return this.navigation.getPath() != null && this.navigation.getPath().canReach();
+    }
+
+
 
     @Override
     protected BodyRotationControl createBodyControl() {
@@ -114,7 +126,7 @@ public class FireSpirit extends FlyingMob {
         }
     }
 
-    private double getGroundHeight() {
+    public double getGroundHeight() {
         BlockPos pos = this.blockPosition();
         Level level = this.level();
 
@@ -187,7 +199,17 @@ public class FireSpirit extends FlyingMob {
 
 
     class FlyAroundGoal extends Goal {
+
+        double groundY = FireSpirit.this.getGroundHeight();
+        double maxHeight = groundY + 5;  // limite à 5 blocs au-dessus du sol
+        double minHeight = groundY + 1;  // limite basse pour éviter qu'il soit collé au sol
+
+        double y = FireSpirit.this.getY() + (FireSpirit.this.getRandom().nextDouble() - 0.5) * 8;
+// Clamp y entre minHeight et maxHeight
+
+
         public FlyAroundGoal() {
+            y = Mth.clamp(y, minHeight, maxHeight);
             this.setFlags(EnumSet.of(Flag.MOVE));
         }
 

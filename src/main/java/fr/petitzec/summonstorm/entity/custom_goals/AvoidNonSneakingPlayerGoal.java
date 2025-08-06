@@ -1,6 +1,7 @@
 package fr.petitzec.summonstorm.entity.custom_goals;
 
 import fr.petitzec.summonstorm.entity.custom.FireSpirit;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -98,8 +99,20 @@ public class AvoidNonSneakingPlayerGoal extends Goal {
             Vec3 playerPos = targetPlayer.position();
             Vec3 away = mobPos.subtract(playerPos).normalize();
 
-            // Mouvement
-            fireSpirit.setDeltaMovement(away.scale(0.6));
+            // Calculer la position cible initiale (fuite)
+            Vec3 fleeTarget = mobPos.add(away.scale(8));
+
+            // Récupérer la hauteur du sol sous le mob
+            double groundY = fireSpirit.getGroundHeight();
+
+            // Corriger la hauteur cible (pas plus de 5 blocs au-dessus du sol)
+            double targetY = Mth.clamp(fleeTarget.y, groundY + 1, groundY + 5);
+            Vec3 correctedFleeTarget = new Vec3(fleeTarget.x, targetY, fleeTarget.z);
+
+            // Appliquer le mouvement vers la direction "away", en prenant en compte la hauteur corrigée
+            Vec3 delta = correctedFleeTarget.subtract(mobPos).normalize().scale(0.6);
+            fireSpirit.setDeltaMovement(delta);
+
             fireSpirit.setYRot((float) (Math.atan2(away.z, away.x) * (180F / Math.PI)) - 90F);
             fireSpirit.yBodyRot = fireSpirit.getYRot();
             fireSpirit.yHeadRot = fireSpirit.getYRot();
