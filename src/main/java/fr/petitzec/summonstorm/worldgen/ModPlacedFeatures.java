@@ -33,6 +33,7 @@ public class ModPlacedFeatures {
         System.out.println("---- Placed Features registered ----");
 
         var configuredFeatures = context.lookup(Registries.CONFIGURED_FEATURE);
+
         // 12 nb de tentative de gen. par chunck
         register(context, INFUSED_STONE_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.INFUSED_STONE_KEY),
                 ModOrePlacement.commonOrePlacement(8,
@@ -73,6 +74,7 @@ public class ModPlacedFeatures {
     private static void register(BootstrapContext<PlacedFeature> context, ResourceKey<PlacedFeature> key, Holder<ConfiguredFeature<?, ?>> configuration,
                                  List<PlacementModifier> modifiers) {
         context.register(key, new PlacedFeature(configuration, List.copyOf(modifiers)));
+
     }
 
     /*public static final DeferredRegister<PlacedFeature> PLACED_FEATURES =

@@ -53,6 +53,10 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.AIR_INFUSED_DEEPSLATE.get());
                         output.accept(ModBlocks.EARTH_INFUSED_DEEPSLATE.get());
                         output.accept(ModBlocks.VERDANT_INFUSED_DEEPSLATE.get());
+
+                        // Eggs
+                        output.accept(ModItems.FIRE_SPIRIT_SPAWN_EGG.get());
+
                     })
                     .build());
 
