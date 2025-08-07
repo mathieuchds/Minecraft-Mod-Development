@@ -2,6 +2,7 @@ package fr.petitzec.summonstorm.entity.custom;
 
 import fr.petitzec.summonstorm.entity.custom_goals.AvoidNonSneakingPlayerGoal;
 import fr.petitzec.summonstorm.entity.custom_goals.FireSpiritSeekLavaGoal;
+import fr.petitzec.summonstorm.entity.custom_goals.FireSpiritWanderNearLavaGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -13,10 +14,13 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -29,7 +33,7 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.EnumSet;
 
-public class FireSpirit extends PathfinderMob {
+public class FireSpirit extends FlyingMob {
 
     public Vec3 moveTarget = Vec3.ZERO;
     private Vec3 lastPosition = Vec3.ZERO;
@@ -42,7 +46,7 @@ public class FireSpirit extends PathfinderMob {
 
     public FireSpirit(EntityType<? extends FireSpirit> type, Level world) {
         super(type, world);
-        this.moveControl = new MyFlyingMoveControl(this);
+        this.moveControl = new FlyingMoveControl(this, 10, true);
         this.lookControl = new MyFlyingLookControl(this);
         this.setNoGravity(true);
     }
@@ -52,15 +56,16 @@ public class FireSpirit extends PathfinderMob {
                 .add(Attributes.MAX_HEALTH, 1.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.2D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5D)
-                .add(Attributes.FLYING_SPEED, 0.1D);
+                .add(Attributes.FLYING_SPEED, 0.31D);
     }
 
 
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new AvoidNonSneakingPlayerGoal(this));
-        this.goalSelector.addGoal(2, new FlyAroundGoal());
-        this.goalSelector.addGoal(1, new FireSpiritSeekLavaGoal(this, 0.2D));
+        this.goalSelector.addGoal(1, new FireSpiritSeekLavaGoal(this));
+        this.goalSelector.addGoal(2, new FireSpiritWanderNearLavaGoal(this));
+        this.goalSelector.addGoal(3, new FlyAroundGoal());
     }
 
     @Override
@@ -68,11 +73,12 @@ public class FireSpirit extends PathfinderMob {
         return false; // Ne prend jamais de dégâts de chute
     }
 
-    public boolean pathfindDirectlyTowards(BlockPos pos) {
-        this.navigation.setMaxVisitedNodesMultiplier(10.0F);
-        this.navigation.moveTo(pos.getX(), pos.getY(), pos.getZ(), 1.0); // vitesse 1.0, à ajuster
-        return this.navigation.getPath() != null && this.navigation.getPath().canReach();
+    @Override
+    protected PathNavigation createNavigation(Level world) {
+        return new FlyingPathNavigation(this, world);
     }
+
+
 
 
 
@@ -220,6 +226,7 @@ public class FireSpirit extends PathfinderMob {
 
         @Override
         public void tick() {
+            System.out.println("fly around");
             if (FireSpirit.this.moveTarget == null || FireSpirit.this.position().distanceTo(FireSpirit.this.moveTarget) < 2) {
                 double x = FireSpirit.this.getX() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
                 double y = FireSpirit.this.getY() + (FireSpirit.this.getRandom().nextDouble() - 0.5) * 8;

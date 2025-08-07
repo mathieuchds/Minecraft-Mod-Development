@@ -4,64 +4,102 @@ import fr.petitzec.summonstorm.entity.custom.FireSpirit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
 
-public class FireSpiritSeekLavaGoal extends MoveToBlockGoal {
+import java.util.EnumSet;
 
-    private final PathfinderMob mob;
+public class FireSpiritSeekLavaGoal extends Goal {
 
-    public FireSpiritSeekLavaGoal(PathfinderMob mob, double speed) {
-        // mob, speedModifier, searchRange (25), verticalSearchRange (4)
-        super(mob, speed, 25, 4);
-        this.mob = mob;
+    private final FireSpirit fireSpirit;
+    private BlockPos targetLava;
+    private int ticksStuck = 0;
+    private Path lastPath;
+
+    public FireSpiritSeekLavaGoal(FireSpirit fireSpirit) {
+        this.fireSpirit = fireSpirit;
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE));
     }
-
-    @Override
-    protected boolean isValidTarget(LevelReader level, BlockPos pos) {
-        // Le bloc doit être de la lave et le bloc au-dessus doit être "traversable"
-        return level.getBlockState(pos).is(Blocks.LAVA)
-                && level.getBlockState(pos.above()).isPathfindable(PathComputationType.LAND);
-    }
-
-    @Override
-    public void tick() {
-        if (targetLava != null) {
-            boolean pathStarted = FireSpirit.pathfindDirectlyTowards(targetLava);
-            if (!pathStarted) {
-                // fallback : movement direct par setDeltaMovement si pas de path possible
-                Vec3 direction = Vec3.atCenterOf(targetLava).subtract(fireSpirit.position()).normalize().scale(0.3);
-                fireSpirit.setDeltaMovement(direction);
-            }
-        }
-    }
-
-
-
 
     @Override
     public boolean canUse() {
-        // Active seulement si pas déjà dans la lave
-        return !mob.isInLava() && super.canUse();
+        if (fireSpirit.isInLava()) return false;
+
+        // Cherche la lave dans un rayon
+        BlockPos mobPos = fireSpirit.blockPosition();
+        for (BlockPos pos : BlockPos.betweenClosed(mobPos.offset(-16, -4, -16), mobPos.offset(16, 4, 16))) {
+            if (fireSpirit.level().getBlockState(pos).is(Blocks.LAVA)) {
+                targetLava = pos.immutable();
+                targetLava = targetLava.above(2); // ou .above(3)
+
+                //System.out.println("TargetLava: " + targetLava);
+                //System.out.println("Entity pos: " + fireSpirit.blockPosition());
+                return true;
+            }
+        }
+        //System.out.println("lave pas trouvé");
+        return false;
+    }
+
+    @Override
+    public void start() {
+        ticksStuck = 0;
+        lastPath = null;
+    }
+
+    @Override
+    public void stop() {
+        targetLava = null;
+        fireSpirit.getNavigation().stop();
     }
 
     @Override
     public boolean canContinueToUse() {
-        // Continue tant que pas dans la lave
-        return !mob.isInLava() && super.canContinueToUse();
+        System.out.println(targetLava + " " + fireSpirit.distanceToSqr(Vec3.atCenterOf(targetLava)));
+        return targetLava != null && fireSpirit.distanceToSqr(Vec3.atCenterOf(targetLava)) > 5;
     }
 
-    @Override
-    public boolean shouldRecalculatePath() {
-        // Recalcule le chemin toutes les 20 ticks
-        return this.tryTicks % 20 == 0;
-    }
 
     @Override
-    public BlockPos getMoveToTarget() {
-        return this.blockPos;
+    public void tick() {
+        if (targetLava == null) return;
+
+        if (!fireSpirit.getNavigation().isInProgress()) {
+            //System.out.println("find target");
+            fireSpirit.getNavigation().setMaxVisitedNodesMultiplier(10.0F);
+
+            //System.out.println("try path to: " + targetLava);
+            Path path = fireSpirit.getNavigation().createPath(targetLava, 0);
+            if (path == null) {
+                //System.out.println("NO PATH FOUND");
+            } else {
+                //System.out.println("Path exists");
+            }
+
+            fireSpirit.getNavigation().moveTo(targetLava.getX() + 0.5, targetLava.getY() + 1, targetLava.getZ() + 0.5, 1.0);
+        }
+        //System.out.println("cond : "+ lastPath +"  " + fireSpirit.getNavigation().getPath() +"  " + fireSpirit.getNavigation().getPath().sameAs(lastPath));
+        if(lastPath != null)
+            System.out.println(fireSpirit.getNavigation().getPath().sameAs(lastPath));
+
+        if (lastPath != null && fireSpirit.getNavigation().getPath() != null &&
+                fireSpirit.getNavigation().getPath().sameAs(lastPath)) {
+            ticksStuck++;
+            //System.out.println("stuck" + fireSpirit.onGround());
+            if (ticksStuck > 60) {
+                //System.out.println("abandon");
+                stop(); // abandon si bloqué
+            }
+        } else {
+            //System.out.println("tick");
+            lastPath = fireSpirit.getNavigation().getPath();
+            ticksStuck = 0;
+        }
     }
 }
+
