@@ -26,9 +26,10 @@ public class FireSpiritWanderNearLavaGoal extends Goal {
         BlockPos pos = fireSpirit.blockPosition();
         LevelReader level = fireSpirit.level();
 
-        for (BlockPos around : BlockPos.betweenClosed(pos.offset(-4, -2, -4), pos.offset(4, 2, 4))) {
+        for (BlockPos around : BlockPos.betweenClosed(pos.offset(-6, -4, -6), pos.offset(6, 4, 6))) {
             if (level.getBlockState(around).is(Blocks.LAVA) &&
                     level.getBlockState(around.above()).isAir()) {
+                centerLavaPos = around;
                 return true;
             }
         }
@@ -47,7 +48,7 @@ public class FireSpiritWanderNearLavaGoal extends Goal {
         BlockPos pos = fireSpirit.blockPosition();
         LevelReader level = fireSpirit.level();
 
-        for (BlockPos around : BlockPos.betweenClosed(pos.offset(-4, -2, -4), pos.offset(4, 2, 4))) {
+        for (BlockPos around : BlockPos.betweenClosed(pos.offset(-6, -4, -6), pos.offset(6, 4, 6))) {
             if (level.getBlockState(around).is(Blocks.LAVA) &&
                     level.getBlockState(around.above()).isAir()) {
                 return true;
@@ -58,11 +59,12 @@ public class FireSpiritWanderNearLavaGoal extends Goal {
 
     @Override
     public void tick() {
+        System.out.println("wandering");
+
         if (cooldown > 0) {
             cooldown--;
             return;
         }
-        System.out.println("wanderingggg");
         RandomSource random = fireSpirit.getRandom();
         double radius = 4.0;
 

@@ -32,14 +32,14 @@ public class FireSpiritSeekLavaGoal extends Goal {
 
         // Cherche la lave dans un rayon
         BlockPos mobPos = fireSpirit.blockPosition();
-        for (BlockPos pos : BlockPos.betweenClosed(mobPos.offset(-16, -4, -16), mobPos.offset(16, 4, 16))) {
+        for (BlockPos pos : BlockPos.betweenClosed(mobPos.offset(-18, -6, -18), mobPos.offset(18, 6, 18))) {
             if (fireSpirit.level().getBlockState(pos).is(Blocks.LAVA)) {
                 targetLava = pos.immutable();
                 targetLava = targetLava.above(2); // ou .above(3)
 
                 //System.out.println("TargetLava: " + targetLava);
-                //System.out.println("Entity pos: " + fireSpirit.blockPosition());
-                return true;
+                System.out.println("canUse: " + fireSpirit.distanceToSqr(Vec3.atCenterOf(targetLava)));
+                return fireSpirit.distanceToSqr(Vec3.atCenterOf(targetLava)) > 6;
             }
         }
         //System.out.println("lave pas trouvé");
@@ -60,13 +60,15 @@ public class FireSpiritSeekLavaGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        System.out.println(targetLava + " " + fireSpirit.distanceToSqr(Vec3.atCenterOf(targetLava)));
-        return targetLava != null && fireSpirit.distanceToSqr(Vec3.atCenterOf(targetLava)) > 5;
+        System.out.println("canContinue :" + targetLava + " " + fireSpirit.distanceToSqr(Vec3.atCenterOf(targetLava)));
+        return targetLava != null && fireSpirit.distanceToSqr(Vec3.atCenterOf(targetLava)) > 6;
     }
 
 
     @Override
     public void tick() {
+        System.out.println("seek lava");
+
         if (targetLava == null) return;
 
         if (!fireSpirit.getNavigation().isInProgress()) {
@@ -85,7 +87,7 @@ public class FireSpiritSeekLavaGoal extends Goal {
         }
         //System.out.println("cond : "+ lastPath +"  " + fireSpirit.getNavigation().getPath() +"  " + fireSpirit.getNavigation().getPath().sameAs(lastPath));
         if(lastPath != null)
-            System.out.println(fireSpirit.getNavigation().getPath().sameAs(lastPath));
+            //System.out.println(fireSpirit.getNavigation().getPath().sameAs(lastPath));
 
         if (lastPath != null && fireSpirit.getNavigation().getPath() != null &&
                 fireSpirit.getNavigation().getPath().sameAs(lastPath)) {
