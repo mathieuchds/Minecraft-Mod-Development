@@ -10,6 +10,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -32,6 +33,7 @@ import net.minecraft.world.entity.player.Player;
 
 
 import java.util.EnumSet;
+import java.util.Random;
 
 public class FireSpirit extends FlyingMob {
 
@@ -204,62 +206,52 @@ public class FireSpirit extends FlyingMob {
     }
 
 
-    class FlyAroundGoal extends Goal {
+    public class FlyAroundGoal extends Goal {
 
-        double groundY = FireSpirit.this.getGroundHeight();
-        double maxHeight = groundY + 5;  // limite à 5 blocs au-dessus du sol
-        double minHeight = groundY + 1;  // limite basse pour éviter qu'il soit collé au sol
-
-        double y = FireSpirit.this.getY() + (FireSpirit.this.getRandom().nextDouble() - 0.5) * 8;
-// Clamp y entre minHeight et maxHeight
-
+        private static final int RANGE = 8; // distance max dans chaque direction
+        private static final double HEIGHT_ABOVE_GROUND_MIN = 1.0;
+        private static final double HEIGHT_ABOVE_GROUND_MAX = 5.0;
 
         public FlyAroundGoal() {
-            y = Mth.clamp(y, minHeight, maxHeight);
-            this.setFlags(EnumSet.of(Flag.MOVE));
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         }
 
         @Override
         public boolean canUse() {
-            return !FireSpirit.this.isFleeing; // NE VOLE PAS si en fuite
+            return !FireSpirit.this.isFleeing;
         }
 
         @Override
         public void tick() {
             System.out.println("fly around");
-            if (FireSpirit.this.moveTarget == null || FireSpirit.this.position().distanceTo(FireSpirit.this.moveTarget) < 2) {
-                double x = FireSpirit.this.getX() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
-                double y = FireSpirit.this.getY() + (FireSpirit.this.getRandom().nextDouble() - 0.5) * 8;
-                double z = FireSpirit.this.getZ() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
+            if (FireSpirit.this.moveTarget == null ||
+                    FireSpirit.this.position().distanceTo(FireSpirit.this.moveTarget) < 2.0) {
+                setNewRandomDirection();
+            }
+            FireSpirit.this.getNavigation().moveTo(moveTarget.x + 0.5, moveTarget.y + 1, moveTarget.z + 0.5, 1.0);
+        }
 
-                // Vérifier le bloc sous cette position (y-1) pour éviter lave ou feu
-                int yInt = Mth.floor(y);  // Mth.floor arrondit vers le bas
-                BlockPos posBelow = new BlockPos(Mth.floor(x), yInt - 1, Mth.floor(z));
+        private void setNewRandomDirection() {
+            RandomSource random = FireSpirit.this.getRandom();
+            double groundY = FireSpirit.this.getGroundHeight();
 
-                Level level = FireSpirit.this.level();
+            // Position cible aléatoire dans un cube autour du mob
+            double x = FireSpirit.this.getX() + (random.nextDouble() - 0.5) * 2 * RANGE;
+            double y = FireSpirit.this.getY() + (random.nextDouble() - 0.5) * 2 * RANGE;
+            double z = FireSpirit.this.getZ() + (random.nextDouble() - 0.5) * 2 * RANGE;
 
-                if (!level.isEmptyBlock(posBelow)) {
-                    // Récupérer l’état du bloc sous la cible
-                    var blockState = level.getBlockState(posBelow);
+            // Clamp la hauteur pour rester dans une zone autorisée
+            double minY = groundY + HEIGHT_ABOVE_GROUND_MIN;
+            double maxY = groundY + HEIGHT_ABOVE_GROUND_MAX;
+            y = Mth.clamp(y, minY, maxY);
 
-                    if (blockState.is(Blocks.LAVA) || blockState.is(Blocks.FIRE) || blockState.getFluidState().getType() == Fluids.LAVA) {
-                        y = posBelow.getY() + 3; // remonter au-dessus
-                    }
-                }
-
-                Vec3 target = new Vec3(x, y, z);
-                if (FireSpirit.this.level().noCollision(FireSpirit.this.getBoundingBox().move(target.subtract(FireSpirit.this.position())))) {
-                    FireSpirit.this.moveTarget = target;
-                }
+            Vec3 target = new Vec3(x, y, z);
+            if (FireSpirit.this.level().noCollision(FireSpirit.this.getBoundingBox().move(target.subtract(FireSpirit.this.position())))) {
+                FireSpirit.this.moveTarget = target;
+            }else{
+                FireSpirit.this.moveTarget = FireSpirit.this.position();
             }
         }
-
-        @Override
-        public void start() {
-            double x = FireSpirit.this.getX() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
-            double y = FireSpirit.this.getY() + (FireSpirit.this.getRandom().nextDouble() - 0.5) * 8;
-            double z = FireSpirit.this.getZ() + ((FireSpirit.this.getRandom().nextDouble() - 0.5) * 16);
-            FireSpirit.this.moveTarget = new Vec3(x, y, z);
-        }
     }
+
 }
