@@ -14,7 +14,7 @@ import net.minecraft.util.Mth;
 public class FireSpiritModel<T extends FireSpirit> extends HierarchicalModel<T> {
 
     public static final ModelLayerLocation LAYER_LOCATION =
-            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath( "modid", "fireSpirit"), "main");
+            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath( "modid", "fire_spirit"), "main");
     private final ModelPart body;
     private final ModelPart head;
 
