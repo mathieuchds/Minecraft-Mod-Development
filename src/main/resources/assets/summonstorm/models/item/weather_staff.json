@@ -3,7 +3,7 @@
   "credit": "Made with Blockbench",
   "texture_size": [64, 64],
   "textures": {
-    "0": "item/weather_staff",
+    "0": "summonstorm:item/weather_staff",
     "particle": "block/texture"
   },
   "elements": [
