@@ -24,6 +24,7 @@ import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
@@ -154,6 +155,17 @@ public class FireSpirit extends FlyingMob {
     public boolean isOnFire() {
         return false;
     }
+
+    /*public static boolean canSpawnAtNight(EntityType<FireSpirit> type, ServerLevelAccessor level, MobSpawnType reason, BlockPos pos, RandomSource random) {
+        // Vérifie qu'il fait nuit
+        boolean isNight = !level.getLevel().isDay();
+
+        // Vérifie les règles classiques de spawn d’animal (solide au sol, etc.)
+        boolean canSpawnNormally = Animal.checkAnimalSpawnRules(type, level, reason, pos, random);
+
+        return isNight && canSpawnNormally;
+    }*/
+
 
     // Exemple simple de contrôle du mouvement
     class MyFlyingMoveControl extends MoveControl {
