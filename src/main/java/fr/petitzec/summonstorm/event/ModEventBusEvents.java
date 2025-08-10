@@ -25,9 +25,12 @@ public class ModEventBusEvents {
         event.put(ModEntities.FIRE_SPIRIT.get(), FireSpirit.createAttributes().build());
     }
 
-    /*@SubscribeEvent
+    @SubscribeEvent
     public static void registerSpawnPlacements(SpawnPlacementRegisterEvent event) {
-        event.register(ModEntities.FIRE_SPIRIT.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Animal::checkAnimalSpawnRules, SpawnPlacementRegisterEvent.Operation.REPLACE);
-    }*/
+        event.register(ModEntities.FIRE_SPIRIT.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS, // Pas besoin d'être au sol
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                FireSpirit::canSpawnAtNight,
+                SpawnPlacementRegisterEvent.Operation.REPLACE);
+    }
 }

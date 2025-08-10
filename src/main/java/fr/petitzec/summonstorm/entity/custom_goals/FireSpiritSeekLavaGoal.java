@@ -47,7 +47,7 @@ public class FireSpiritSeekLavaGoal extends Goal {
 
         if (closestLavaPos != null && closestDistance > 6) {
             targetLava = closestLavaPos;
-            System.out.println("canUse: targetLava = " + targetLava + ", distance = " + closestDistance);
+            //System.out.println("canUse: targetLava = " + targetLava + ", distance = " + closestDistance);
             return true;
         }
 
@@ -91,7 +91,7 @@ public class FireSpiritSeekLavaGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        System.out.println("canContinue :" + targetLava + " " + fireSpirit.distanceToSqr(Vec3.atCenterOf(targetLava)));
+        //System.out.println("canContinue :" + targetLava + " " + fireSpirit.distanceToSqr(Vec3.atCenterOf(targetLava)));
         return targetLava != null && fireSpirit.distanceToSqr(Vec3.atCenterOf(targetLava)) > 6;
     }
 

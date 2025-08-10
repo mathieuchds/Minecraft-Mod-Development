@@ -59,7 +59,7 @@ public class FireSpiritWanderNearLavaGoal extends Goal {
 
     @Override
     public void tick() {
-        System.out.println("wandering");
+        //System.out.println("wandering");
 
         if (cooldown > 0) {
             cooldown--;

@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraftforge.common.world.BiomeModifier;
@@ -30,13 +31,8 @@ public class ModBiomeModifiers {
     public static final ResourceKey<BiomeModifier> ADD_AIR_INFUSED_STONE = registerKey("add_air_infused_stone");
     public static final ResourceKey<BiomeModifier> ADD_EARTH_INFUSED_STONE = registerKey("add_earth_infused_stone");
     public static final ResourceKey<BiomeModifier> ADD_VERDANT_INFUSED_STONE = registerKey("add_verdant_infused_stone");
-    /*public static final RegistryObject<BiomeModifier> ADD_FIRE_SPIRIT_SPAWNS =
-            BIOME_MODIFIERS.register("add_fire_spirit_spawn", () ->
-                    new ForgeBiomeModifiers.AddSpawnsBiomeModifier(
-                            new HolderSet.Named<>(Registries.BIOME, new ResourceLocation("summonstorm", "fire_biomes")),
-                            List.of(new MobSpawnSettings.SpawnerData(ModEntities.FIRE_SPIRIT.get(), 20, 1, 2))
-                    )
-            );*/
+    public static final ResourceKey<BiomeModifier> SPAWN_FIRE_SPIRIT = registerKey("spawn_fire_spirit");
+
     /*public static final ResourceKey<BiomeModifier> ADD_NETHER_ALEXANDRITE_ORE = registerKey("add_nether_alexandrite_ore");
     public static final ResourceKey<BiomeModifier> ADD_END_ALEXANDRITE_ORE = registerKey("add_end_alexandrite_ore");*/
 
@@ -103,17 +99,9 @@ public class ModBiomeModifiers {
                 HolderSet.direct(placedFeature.getOrThrow(ModPlacedFeatures.EARTH_INFUSED_STONE_PLACED_KEY)),
                 GenerationStep.Decoration.UNDERGROUND_ORES));
 
-
-
-        /*context.register(ADD_NETHER_ALEXANDRITE_ORE, new ForgeBiomeModifiers.AddFeaturesBiomeModifier(
-                biomes.getOrThrow(BiomeTags.IS_NETHER),
-                HolderSet.direct(placedFeature.getOrThrow(ModPlacedFeatures.NETHER_ALEXANDRITE_ORE_PLACED_KEY)),
-                GenerationStep.Decoration.UNDERGROUND_ORES));
-
-        context.register(ADD_END_ALEXANDRITE_ORE, new ForgeBiomeModifiers.AddFeaturesBiomeModifier(
-                biomes.getOrThrow(BiomeTags.IS_END),
-                HolderSet.direct(placedFeature.getOrThrow(ModPlacedFeatures.END_ALEXANDRITE_ORE_PLACED_KEY)),
-                GenerationStep.Decoration.UNDERGROUND_ORES));*/
+        context.register(SPAWN_FIRE_SPIRIT, new ForgeBiomeModifiers.AddSpawnsBiomeModifier(
+                biomes.getOrThrow(FIRE_BIOMES),
+                List.of(new MobSpawnSettings.SpawnerData(ModEntities.FIRE_SPIRIT.get(), 25, 1, 4))));
 
     }
 

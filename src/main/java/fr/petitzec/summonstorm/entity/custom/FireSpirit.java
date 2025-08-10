@@ -24,8 +24,10 @@ import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.projectile.SmallFireball;
@@ -45,6 +47,7 @@ public class FireSpirit extends FlyingMob {
     private int idleAnimationTimeout = 0;
     public boolean isFleeing = false;
     public int fireballCooldown = 0;
+    private int despawnTimer = -1; // -1 = pas de despawn prévu
 
 
     public FireSpirit(EntityType<? extends FireSpirit> type, Level world) {
@@ -93,6 +96,34 @@ public class FireSpirit extends FlyingMob {
     @Override
     public void tick() {
         super.tick();
+
+        if(this.level().isClientSide()) {
+            this.setupAnimationStates();
+        }
+
+        long timeOfDay = this.level().getDayTime() % 24000;
+        boolean nuit = timeOfDay >= 13000 || timeOfDay < 0; // vrai nuit sombre
+
+        // Si c'est le jour et pas encore de timer → planifier un despawn
+        if (!nuit && despawnTimer == -1) {
+            despawnTimer = this.random.nextInt(1200) + 100;
+        }
+
+        // Si un timer est actif → décompte
+        if (despawnTimer > 0) {
+            despawnTimer--;
+
+            // Début de l'animation quand il reste 20 ticks (1 seconde)
+            if (despawnTimer == 20) {
+                startDespawnAnimation();
+            }
+
+            // Quand timer fini → supprimer l'entité
+            if (despawnTimer == 0) {
+                this.discard();
+            }
+        }
+
         if (fireballCooldown > 0) {
             fireballCooldown--;
         }
@@ -135,6 +166,15 @@ public class FireSpirit extends FlyingMob {
         }
     }
 
+    private void startDespawnAnimation() {
+        if(this.idleAnimationTimeout <= 0) {
+            this.idleAnimationTimeout = 40;
+            this.idleAnimationState.start(this.tickCount);
+        } else {
+            --this.idleAnimationTimeout;
+        }
+    }
+
     public double getGroundHeight() {
         BlockPos pos = this.blockPosition();
         Level level = this.level();
@@ -156,15 +196,39 @@ public class FireSpirit extends FlyingMob {
         return false;
     }
 
-    /*public static boolean canSpawnAtNight(EntityType<FireSpirit> type, ServerLevelAccessor level, MobSpawnType reason, BlockPos pos, RandomSource random) {
-        // Vérifie qu'il fait nuit
-        boolean isNight = !level.getLevel().isDay();
+    @Override
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
+        return true; // Autorise le despawn naturel
+    }
 
-        // Vérifie les règles classiques de spawn d’animal (solide au sol, etc.)
-        boolean canSpawnNormally = Animal.checkAnimalSpawnRules(type, level, reason, pos, random);
+    @Override
+    public boolean shouldDespawnInPeaceful() {
+        return true; // Disparaît aussi en mode Peaceful
+    }
 
-        return isNight && canSpawnNormally;
-    }*/
+    public static boolean canSpawnAtNight(EntityType<FireSpirit> type, ServerLevelAccessor level, MobSpawnType reason, BlockPos pos, RandomSource random) {
+        if (level.getLevel().isDay()) {
+            return false;
+        }
+        if (level.getBrightness(LightLayer.SKY, pos) > random.nextInt(32)) {
+            return false;
+        }
+        if (level.getBrightness(LightLayer.BLOCK, pos) > 0) {
+            return false;
+        }
+
+        // Contrainte hauteur max 8 blocs au-dessus du sol
+        int groundY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos.getX(), pos.getZ());
+        if ((pos.getY() - groundY) > 8) {
+            return false;
+        }
+
+        System.out.println("[FireSpiritSpawnCheck] Pos=" + pos);
+
+        return level.getBlockState(pos).isAir() && level.getBlockState(pos.above()).isAir();
+    }
+
+
 
 
     // Exemple simple de contrôle du mouvement
@@ -235,7 +299,7 @@ public class FireSpirit extends FlyingMob {
 
         @Override
         public void tick() {
-            System.out.println("fly around");
+            //System.out.println("fly around");
             if (FireSpirit.this.moveTarget == null ||
                     FireSpirit.this.position().distanceTo(FireSpirit.this.moveTarget) < 2.0) {
                 setNewRandomDirection();
