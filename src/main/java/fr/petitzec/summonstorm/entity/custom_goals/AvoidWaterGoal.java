@@ -17,6 +17,10 @@ public class AvoidWaterGoal extends Goal {
     private static final int FLEE_DURATION = 60; // ticks (~3 sec)
     private static final int HEIGHT_VARIATION = 3;
     private final FireSpirit fireSpirit;
+    private Vec3 lastShoreDirection = null;
+    private int continueTowardsShoreTicks = 0;
+    private static final int CONTINUE_TICKS = 20;
+
 
     private int fleeTicks = 0;
 
@@ -76,18 +80,32 @@ public class AvoidWaterGoal extends Goal {
                 this.fireSpirit.remove(Entity.RemovalReason.DISCARDED);
                 return;
             }
-            target = new Vec3(shorePos.getX() + 0.5, shorePos.getY() + 1, shorePos.getZ() + 0.5);
 
-            // Si trop proche de la rive, on cherche une cible un peu plus "loin" vers les terres
-            double distToTarget = this.fireSpirit.position().distanceTo(target);
-            if (distToTarget < 3.0) {
-                // Décale la cible de quelques blocs supplémentaires vers l’intérieur des terres
-                Vec3 dirToLand = target.subtract(this.fireSpirit.position()).normalize();
-                target = target.add(dirToLand.scale(4)); // 4 blocs plus loin
+            Vec3 shoreVec = new Vec3(shorePos.getX() + 0.5, shorePos.getY() + 1, shorePos.getZ() + 0.5);
+            shoreVec = shoreVec.add(0, 0.8, 0); // offset vertical
+
+            double distToShore = this.fireSpirit.position().distanceTo(shoreVec);
+
+            if (distToShore > 3.0 || continueTowardsShoreTicks <= 0 || lastShoreDirection == null) {
+                // On recalcule la direction normale vers la rive
+                lastShoreDirection = shoreVec.subtract(this.fireSpirit.position()).normalize();
+                continueTowardsShoreTicks = CONTINUE_TICKS;
+            } else {
+                // On continue dans la direction précédente
+                continueTowardsShoreTicks--;
             }
+
+            // La cible est la position actuelle + direction * distance (pousse un peu plus loin pour éviter blocage)
+            target = this.fireSpirit.position().add(lastShoreDirection.scale(4));
+
+            // Petite variation verticale pour éviter blocage
+            target = target.add(0, (this.fireSpirit.getRandom().nextFloat() - 0.5) * 0.5, 0);
+
+            System.out.println("FireSpirit target (shore chasing): " + target);
         } else {
             target = fleeFrom(waterPos);
         }
+
 
         if (this.fireSpirit.level().noCollision(this.fireSpirit.getBoundingBox().move(target.subtract(this.fireSpirit.position())))) {
             this.fireSpirit.moveTarget = target;
