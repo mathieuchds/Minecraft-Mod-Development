@@ -1,6 +1,7 @@
 package fr.petitzec.summonstorm.entity.custom;
 
 import fr.petitzec.summonstorm.entity.custom_goals.AvoidNonSneakingPlayerGoal;
+import fr.petitzec.summonstorm.entity.custom_goals.AvoidWaterGoal;
 import fr.petitzec.summonstorm.entity.custom_goals.FireSpiritSeekLavaGoal;
 import fr.petitzec.summonstorm.entity.custom_goals.FireSpiritWanderNearLavaGoal;
 import net.minecraft.core.BlockPos;
@@ -71,8 +72,10 @@ public class FireSpirit extends FlyingMob {
         this.goalSelector.addGoal(0, new AvoidNonSneakingPlayerGoal(this));
         this.goalSelector.addGoal(1, new FireSpiritSeekLavaGoal(this));
         this.goalSelector.addGoal(2, new FireSpiritWanderNearLavaGoal(this));
-        this.goalSelector.addGoal(3, new FlyAroundGoal());
+        this.goalSelector.addGoal(3, new AvoidWaterGoal(this)); // ajouté ici
+        this.goalSelector.addGoal(4, new FlyAroundGoal());
     }
+
 
     @Override
     public boolean causeFallDamage(float fallDistance, float damageMultiplier, DamageSource source) {
@@ -166,7 +169,7 @@ public class FireSpirit extends FlyingMob {
         }
     }
 
-    private void startDespawnAnimation() {
+    public void startDespawnAnimation() {
         if(this.idleAnimationTimeout <= 0) {
             this.idleAnimationTimeout = 40;
             this.idleAnimationState.start(this.tickCount);
@@ -206,27 +209,59 @@ public class FireSpirit extends FlyingMob {
         return true; // Disparaît aussi en mode Peaceful
     }
 
-    public static boolean canSpawnAtNight(EntityType<FireSpirit> type, ServerLevelAccessor level, MobSpawnType reason, BlockPos pos, RandomSource random) {
-        if (level.getLevel().isDay()) {
-            return false;
-        }
-        if (level.getBrightness(LightLayer.SKY, pos) > random.nextInt(32)) {
-            return false;
-        }
-        if (level.getBrightness(LightLayer.BLOCK, pos) > 0) {
+    public static boolean canSpawnAtNight(EntityType<FireSpirit> type,
+                                          ServerLevelAccessor levelAccessor,
+                                          MobSpawnType reason,
+                                          BlockPos pos,
+                                          RandomSource random) {
+        // Assure-toi d'avoir bien un ServerLevel si besoin d'API serveur
+        if (!(levelAccessor instanceof ServerLevel level)) {
             return false;
         }
 
-        // Contrainte hauteur max 8 blocs au-dessus du sol
+        // ------------- conditions "nuit / lumière / hauteur" -------------
+        long time = level.getDayTime() % 24000L;
+        boolean isNight = time >= 13000L && time <= 23000L; // ajustable
+        if (!isNight) return false;
+
+        if (level.getBrightness(LightLayer.SKY, pos) > random.nextInt(32)) return false;
+        if (level.getBrightness(LightLayer.BLOCK, pos) > 0) return false;
+
         int groundY = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos.getX(), pos.getZ());
-        if ((pos.getY() - groundY) > 8) {
-            return false;
+        if ((pos.getY() - groundY) > 8) return false;
+
+        if (!level.getBlockState(pos).isAir() || !level.getBlockState(pos.above()).isAir()) return false;
+
+        // ------------- recherche de lave proche (sécurisée) -------------
+        final int rx = 18, ry = 6, rz = 18;
+        boolean lavaNearby = false;
+        double closestDist = Double.MAX_VALUE;
+
+        // On parcourt, mais on skip les accès qui lèvent IllegalStateException (chunk non dispo)
+        // On s'arrête dès qu'on trouve de la lave.
+        for (BlockPos checkPos : BlockPos.betweenClosed(pos.offset(-rx, -ry, -rz), pos.offset(rx, ry, rz))) {
+            try {
+                // getBlockState peut lancer IllegalStateException si chunk non prêt -> on skip
+                if (level.getBlockState(checkPos).is(Blocks.LAVA)) {
+                    lavaNearby = true;
+                    closestDist = Math.sqrt(pos.distSqr(checkPos));
+                    break; // on s'arrête dès la première lave trouvée
+                }
+            } catch (IllegalStateException ex) {
+                // chunk indisponible pendant worldgen : ne plantons pas, passons à la suite
+                continue;
+            }
         }
 
-        System.out.println("[FireSpiritSpawnCheck] Pos=" + pos);
+        if (!lavaNearby) return false;
 
-        return level.getBlockState(pos).isAir() && level.getBlockState(pos.above()).isAir();
+        // debug optionnel
+        // System.out.println("[FireSpiritSpawnCheck] Pos=" + pos + " => LavaNearby=true (≈" + closestDist + " blocks)");
+
+        return true;
     }
+
+
 
 
 

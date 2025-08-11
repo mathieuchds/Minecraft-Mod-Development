@@ -31,14 +31,14 @@ public class NightSpawnHandler {
         }
 
         // Retour au jour → reset
-        if (timeOfDay < 13000 && nightStarted) {
+        if ((timeOfDay < 13000 && nightStarted)||(timeOfDay > 14000 && nightStarted)) {
             nightStarted = false;
         }
 
         // Pendant la première minute de nuit (1200 ticks)
         if (nightStarted && level.getGameTime() - nightStartTime <= 1200) {
             for (ServerPlayer player : level.players()) {
-                if (level.random.nextFloat() < 0.005f) { // 0.5% de chance par tick par joueur
+                if (level.random.nextFloat() < 0.003f) { // 0.5% de chance par tick par joueur
                     spawnFireSpiritNear(level, player);
                 }
             }
