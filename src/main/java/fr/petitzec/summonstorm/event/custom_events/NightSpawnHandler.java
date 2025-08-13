@@ -56,6 +56,7 @@ public class NightSpawnHandler {
         FireSpirit fireSpirit = new FireSpirit(ModEntities.FIRE_SPIRIT.get(), level);
         fireSpirit.moveTo(x, y, z, level.random.nextFloat() * 360F, 0F);
         level.addFreshEntity(fireSpirit);
+        fireSpirit.startSpawnAnimation();
     }
 }
 

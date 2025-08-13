@@ -54,7 +54,17 @@ public class FireSpiritWanderNearLavaGoal extends Goal {
                 return true;
             }
         }
+        fireSpirit.walkAnimationState.stop();
+        fireSpirit.walkAnimationTimeout = 0;
         return false;
+    }
+
+    @Override
+    public void stop() {
+        fireSpirit.isFleeing = false;
+        fireSpirit.moveTarget = null;
+        fireSpirit.walkAnimationState.stop();
+        fireSpirit.walkAnimationTimeout = 0;
     }
 
     @Override
@@ -63,6 +73,7 @@ public class FireSpiritWanderNearLavaGoal extends Goal {
 
         if (cooldown > 0) {
             cooldown--;
+            fireSpirit.startWalkAnimation();
             return;
         }
         RandomSource random = fireSpirit.getRandom();
@@ -73,6 +84,7 @@ public class FireSpiritWanderNearLavaGoal extends Goal {
         double z = centerLavaPos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 2 * radius;
 
         fireSpirit.getNavigation().moveTo(x, y, z, 1.0);
+        fireSpirit.startWalkAnimation();
 
         cooldown = 40 + random.nextInt(40); // attend un peu avant de changer de direction
     }

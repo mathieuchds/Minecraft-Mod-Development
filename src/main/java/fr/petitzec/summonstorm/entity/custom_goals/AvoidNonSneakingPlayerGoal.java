@@ -59,6 +59,8 @@ public class AvoidNonSneakingPlayerGoal extends Goal {
         lookTicks = 0;
         currentState = State.LOOKING;
         fireSpirit.moveTarget = null;
+        fireSpirit.runAnimationState.stop();
+        fireSpirit.runAnimationTimeout = 0;
     }
 
     @Override
@@ -84,17 +86,22 @@ public class AvoidNonSneakingPlayerGoal extends Goal {
                 fireSpirit.setYRot(yaw);
                 fireSpirit.yBodyRot = yaw;
                 fireSpirit.yHeadRot = yaw;
+
+                fireSpirit.startAttackAnimation();
             }
 
 
             if (lookTicks >= MAX_LOOK_TICKS) {
                 currentState = State.FLEEING;
                 fireSpirit.isFleeing = true;
+                fireSpirit.attackAnimationState.stop();
+                fireSpirit.attackAnimationTimeout = 0;
             }
 
         } else if (currentState == State.FLEEING) {
             fleeTicks++;
 
+            fireSpirit.startRunAnimation();
             Vec3 mobPos = fireSpirit.position();
             Vec3 playerPos = targetPlayer.position();
             Vec3 away = mobPos.subtract(playerPos).normalize();

@@ -21,6 +21,7 @@ import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
@@ -44,11 +45,23 @@ public class FireSpirit extends FlyingMob {
     public Vec3 moveTarget = Vec3.ZERO;
     private Vec3 lastPosition = Vec3.ZERO;
     private int stuckCounter = 0;
-    public final AnimationState idleAnimationState = new AnimationState();
-    private int idleAnimationTimeout = 0;
     public boolean isFleeing = false;
     public int fireballCooldown = 0;
-    private int despawnTimer = -1; // -1 = pas de despawn prévu
+    public int despawnTimer = -1; // -1 = pas de despawn prévu
+
+    public final AnimationState idleAnimationState = new AnimationState();
+    public final AnimationState attackAnimationState = new AnimationState();
+    public final AnimationState despawnAnimationState = new AnimationState();
+    public final AnimationState spawnAnimationState = new AnimationState();
+    public final AnimationState runAnimationState = new AnimationState();
+    public final AnimationState walkAnimationState = new AnimationState();
+
+    private int idleAnimationTimeout = 0;
+    public int despawnAnimationTimeout = 0;
+    public int spawnAnimationTimeout = 0;
+    public int attackAnimationTimeout = 0;
+    public int runAnimationTimeout = 0;
+    public int walkAnimationTimeout = 0;
 
 
     public FireSpirit(EntityType<? extends FireSpirit> type, Level world) {
@@ -74,6 +87,7 @@ public class FireSpirit extends FlyingMob {
         this.goalSelector.addGoal(2, new FireSpiritWanderNearLavaGoal(this));
         this.goalSelector.addGoal(3, new AvoidWaterGoal(this)); // ajouté ici
         this.goalSelector.addGoal(4, new FlyAroundGoal());
+        this.goalSelector.addGoal(5, new RandomLookAroundGoal(this));
     }
 
 
@@ -117,7 +131,7 @@ public class FireSpirit extends FlyingMob {
             despawnTimer--;
 
             // Début de l'animation quand il reste 20 ticks (1 seconde)
-            if (despawnTimer == 20) {
+            if (despawnTimer == 40) {
                 startDespawnAnimation();
             }
 
@@ -161,22 +175,84 @@ public class FireSpirit extends FlyingMob {
     }
 
     private void setupAnimationStates() {
-        if(this.idleAnimationTimeout <= 0) {
-            this.idleAnimationTimeout = 80;
-            this.idleAnimationState.start(this.tickCount);
-        } else {
-            --this.idleAnimationTimeout;
+        boolean playingOtherAnim =
+                this.attackAnimationTimeout > 0 ||
+                        this.despawnAnimationTimeout > 0 ||
+                        this.spawnAnimationTimeout > 0 ||
+                        this.walkAnimationTimeout > 0 ||
+                        this.runAnimationTimeout > 0;
+
+        // Idle seulement si aucune autre anim
+        if (!playingOtherAnim) {
+            if (this.idleAnimationTimeout <= 0) {
+                this.idleAnimationTimeout = 80;
+                this.idleAnimationState.start(this.tickCount);
+            } else {
+                --this.idleAnimationTimeout;
+            }
+        }
+
+        if (this.attackAnimationTimeout > 0) {
+            --this.attackAnimationTimeout;
+        }
+
+        if (this.despawnAnimationTimeout > 0) {
+            --this.despawnAnimationTimeout;
+        }
+
+        if (this.spawnAnimationTimeout > 0) {
+            --this.spawnAnimationTimeout;
+        }
+
+        if (this.walkAnimationTimeout > 0) {
+            --this.walkAnimationTimeout;
+        }
+
+        if (this.runAnimationTimeout > 0) {
+            --this.runAnimationTimeout;
         }
     }
 
     public void startDespawnAnimation() {
-        if(this.idleAnimationTimeout <= 0) {
-            this.idleAnimationTimeout = 40;
-            this.idleAnimationState.start(this.tickCount);
-        } else {
-            --this.idleAnimationTimeout;
+        if(this.despawnAnimationTimeout <= 0) {
+            this.despawnAnimationTimeout = 40;
+            this.idleAnimationTimeout = 0;
+            this.despawnAnimationState.start(this.tickCount);
         }
     }
+
+    public void startSpawnAnimation() {
+        if(this.spawnAnimationTimeout <= 0) {
+            this.spawnAnimationTimeout = 40;
+            this.idleAnimationTimeout = 0;
+            this.spawnAnimationState.start(this.tickCount);
+        }
+    }
+
+    public void startWalkAnimation() {
+        if(this.walkAnimationTimeout <= 0) {
+            this.walkAnimationTimeout = 40;
+            this.idleAnimationTimeout = 0;
+            this.walkAnimationState.start(this.tickCount);
+        }
+    }
+
+    public void startRunAnimation() {
+        if(this.runAnimationTimeout <= 0) {
+            this.runAnimationTimeout = 40;
+            this.idleAnimationTimeout = 0;
+            this.runAnimationState.start(this.tickCount);
+        }
+    }
+
+    public void startAttackAnimation() {
+        if(this.attackAnimationTimeout <= 0) {
+            this.attackAnimationTimeout = 40;
+            this.idleAnimationTimeout = 0;
+            this.attackAnimationState.start(this.tickCount);
+        }
+    }
+
 
     public double getGroundHeight() {
         BlockPos pos = this.blockPosition();
@@ -262,49 +338,6 @@ public class FireSpirit extends FlyingMob {
     }
 
 
-
-
-
-
-    // Exemple simple de contrôle du mouvement
-    class MyFlyingMoveControl extends MoveControl {
-        public MyFlyingMoveControl(Mob mob) {
-            super(mob);
-        }
-
-        @Override
-        public void tick() {
-            if (!FireSpirit.this.isNoGravity()) {
-                FireSpirit.this.setNoGravity(true);
-            }
-
-            if (FireSpirit.this.moveTarget != null) {
-                double dx = moveTarget.x - FireSpirit.this.getX();
-                double dy = moveTarget.y - FireSpirit.this.getY();
-                double dz = moveTarget.z - FireSpirit.this.getZ();
-
-                double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                if (dist < 1.0) {
-                    FireSpirit.this.setDeltaMovement(FireSpirit.this.getDeltaMovement().scale(0.5));
-                    return;
-                }
-
-                double speed = FireSpirit.this.getAttributeValue(Attributes.FLYING_SPEED);
-                double vx = dx / dist * speed;
-                double vy = dy / dist * speed;
-                double vz = dz / dist * speed;
-
-                FireSpirit.this.setDeltaMovement(new Vec3(vx, vy, vz));
-                FireSpirit.this.setYRot((float) (Math.atan2(dz, dx) * (180F / Math.PI)) - 90F);
-                FireSpirit.this.yBodyRot = FireSpirit.this.getYRot();
-                FireSpirit.this.yBodyRot = FireSpirit.this.getYRot();
-                FireSpirit.this.yHeadRot = FireSpirit.this.getYRot();
-
-            }
-        }
-    }
-
-
     class MyFlyingLookControl extends LookControl {
         public MyFlyingLookControl(Mob mob) {
             super(mob);
@@ -333,12 +366,19 @@ public class FireSpirit extends FlyingMob {
         }
 
         @Override
+        public void stop() {
+            FireSpirit.this.walkAnimationState.stop();
+            FireSpirit.this.walkAnimationTimeout = 0;
+        }
+
+        @Override
         public void tick() {
             //System.out.println("fly around");
             if (FireSpirit.this.moveTarget == null ||
                     FireSpirit.this.position().distanceTo(FireSpirit.this.moveTarget) < 2.0) {
                 setNewRandomDirection();
             }
+            FireSpirit.this.startWalkAnimation();
             FireSpirit.this.getNavigation().moveTo(moveTarget.x + 0.5, moveTarget.y + 1, moveTarget.z + 0.5, 1.0);
         }
 

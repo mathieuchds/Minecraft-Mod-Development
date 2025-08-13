@@ -37,7 +37,20 @@ public class AvoidWaterGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return fleeTicks > 0;
+        if (fleeTicks > 0) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public void stop() {
+        fireSpirit.isFleeing = false;
+        fleeTicks = 0;
+        fireSpirit.moveTarget = null;
+        fireSpirit.runAnimationState.stop();
+        fireSpirit.runAnimationTimeout = 0;
     }
 
     @Override
@@ -76,8 +89,7 @@ public class AvoidWaterGoal extends Goal {
         if (isAboveWater) {
             BlockPos shorePos = findNearestShore(waterPos, 30);
             if (shorePos == null) {
-                this.fireSpirit.startDespawnAnimation();
-                this.fireSpirit.remove(Entity.RemovalReason.DISCARDED);
+                this.fireSpirit.despawnTimer = 40;
                 return;
             }
 
@@ -110,6 +122,7 @@ public class AvoidWaterGoal extends Goal {
         if (this.fireSpirit.level().noCollision(this.fireSpirit.getBoundingBox().move(target.subtract(this.fireSpirit.position())))) {
             this.fireSpirit.moveTarget = target;
             this.fireSpirit.getNavigation().moveTo(target.x, target.y, target.z, 1.6); // vitesse légèrement augmentée
+            fireSpirit.startRunAnimation();
         }
     }
 

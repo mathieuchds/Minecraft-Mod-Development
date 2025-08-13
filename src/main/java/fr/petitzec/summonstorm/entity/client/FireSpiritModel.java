@@ -47,8 +47,12 @@ public class FireSpiritModel<T extends FireSpirit> extends HierarchicalModel<T> 
         this.root().getAllParts().forEach(ModelPart::resetPose);
         this.applyHeadRotation(netHeadYaw, headPitch);
 
-        this.animateWalk(FireSpiritAnimations.ANIM_FIRE_SPIRIT_WALKING, limbSwing, limbSwingAmount, 2f, 2.5f);
         this.animate(entity.idleAnimationState, FireSpiritAnimations.ANIM_FIRE_SPIRIT_IDLE, ageInTicks, 1f);
+        this.animate(entity.attackAnimationState, FireSpiritAnimations.ANIM_FIRE_SPIRIT_ATTACK, ageInTicks, 1f);
+        this.animate(entity.walkAnimationState, FireSpiritAnimations.ANIM_FIRE_SPIRIT_WALKING, ageInTicks, 1f);
+        //this.animate(entity.runAnimationState, FireSpiritAnimations.ANIM_FIRE_SPIRIT_RUN, ageInTicks, 1f);
+        //this.animate(entity.despawnAnimationState, FireSpiritAnimations.ANIM_FIRE_SPIRIT_DESPAWN, ageInTicks, 1f);
+        //this.animate(entity.spawnAnimationState, FireSpiritAnimations.ANIM_FIRE_SPIRIT_SPAWN, ageInTicks, 1f);
     }
 
     private void applyHeadRotation(float pNetHeadYaw, float pHeadPitch) {

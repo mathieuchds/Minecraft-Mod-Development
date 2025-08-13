@@ -65,6 +65,8 @@ public class FireSpiritSeekLavaGoal extends Goal {
     public void stop() {
         targetLava = getRandomValidPositionOrStay();
         fireSpirit.moveTarget = Vec3.atCenterOf(targetLava);
+        fireSpirit.walkAnimationState.stop();
+        fireSpirit.walkAnimationTimeout = 0;
     }
 
     private BlockPos getRandomValidPositionOrStay() {
@@ -113,7 +115,7 @@ public class FireSpiritSeekLavaGoal extends Goal {
             } else {
                 System.out.println("Path exists");
             }
-
+            fireSpirit.startWalkAnimation();
             fireSpirit.getNavigation().moveTo(targetLava.getX() + 0.5, targetLava.getY() + 1, targetLava.getZ() + 0.5, 1.0);
         }
         //System.out.println("cond : "+ lastPath +"  " + fireSpirit.getNavigation().getPath() +"  " + fireSpirit.getNavigation().getPath().sameAs(lastPath));
@@ -128,6 +130,8 @@ public class FireSpiritSeekLavaGoal extends Goal {
                 System.out.println("abandon");
                 stop(); // abandon si bloqué
             }
+            fireSpirit.walkAnimationState.stop();
+            fireSpirit.walkAnimationTimeout = 0;
         } else {
             //System.out.println("tick");
             lastPath = fireSpirit.getNavigation().getPath();
